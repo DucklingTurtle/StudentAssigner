@@ -1,15 +1,20 @@
 import classes
 
-commands_list = "Student Input, Teacher Input, "
+commands_list = "Student Input, Teacher Input, Assigner"
 commands_student = "Create Student, See Students, Remove Student"
-commands_student_stats = "See Student Stats, Back"
+commands_student_stats = "Student Stats, Back"
 commands_teacher = "Create Teacher, See Teachers, Remove Teacher"
+commands_assigner = "Sort"
+commands_assigner_sort = ""
 mode = "init"
 students_list = [
-    {"Name": "Test_name", "Test_name": classes.Student("Test_Name", "Test_Focus1", "Test_Focus2")},
-    {"Name": "Test_name2", "Object": classes.Student("Test_Name2", "Test_Focus1", "Test_Focus2")}
+    classes.Student("Test_first Test_last", "Test Focus 1", "Test Focus 2"),
+    classes.Student("Amanda Panda", "Sound Engineering", "Programming")
 ]
-teachers_list = []
+teachers_list = [
+    classes.Teacher("Test_first1 Test_last2", "Test Focus 1", 0650, 1230),
+    classes.Teacher("Panda Amanda", "Test Focus 2", 0830, 1430)
+]
 advisers = []
 print("Welcome to Assigner Program!")
 print("V 0.1")
@@ -20,17 +25,19 @@ def commands(command):
         mode = "student"
     elif command == "teacher input":
         mode = "teacher"
+    elif command == "assigner":
+        mode = "assigner"
 
 # runs all commands
 while True:
     if mode == "init":
         while mode == "init":
-            print("\nAvailable Commands: " + commands_list + "\nEnter Command: ")
-            commands(input("").lower())
+            print("\nCommands: " + commands_list + "\nEnter Command: ")
+            commands(input("").lower().strip())
     elif mode == "student":
         while mode == "student":
-            print("\nAvailable Commands: " + commands_student + "\nEnter Command: ")
-            user_input = input("").lower()
+            print("\nCommands: " + commands_student + "\nEnter Command: ")
+            user_input = input("").lower().strip()
             if user_input == "create student":
                 student_name = input("Student's name?: \n")
                 student_focus1 = input("Student's first area of focus?: \n")
@@ -39,34 +46,54 @@ while True:
             elif user_input == "see students":
                 print("Students: ")
                 for index in range(len(students_list)):
-                    print(students_list[index]["Name"])
+                    print(students_list[index].name)
                 # commands under see students
                 while True:
-                    print("\nAvailable Commands: " + commands_student_stats + "\nEnter Command: ")
-                    user_input = input("").lower()
-                    if user_input == "see student stats":
+                    print("\nCommands: " + commands_student_stats + "\nEnter Command: ")
+                    user_input = input("").lower().strip()
+                    # student stats command
+                    if user_input == "student stats":
                         print("What student?: ")
-                        choosen_student = input("")
+                        chosen_student = input("").strip()
+                        # find how many students and scan through that number
                         for index in range(len(students_list)):
-                            if choosen_student == students_list[index][choosen_student]:
-                                print("Succesful")
-                                print("Name: " + students_list[index][choosen_student].name)
-                                      # + "\nFocus Area 1: " + students_list[index][choosen_student].focus1)
-                                      # "\nFocus 1 Teacher: " + students_list[index][choosen_student].focus1_teachers +
-                                      # "\nFocus Area 2: " + students_list[index][choosen_student].focus2 +
-                                      # "\nFocus Area 2 Teacher: " + students_list[index][choosen_student].focus2_teachers +
-                                      # "\nAdviser: " + students_list[index][choosen_student].adviser)
-                                # print("Focus Area 1: " + students_list[index][choosen_student].focus1)
+                                # finds out if student is in list and what its index is
+                                if chosen_student.lower() == students_list[index].name.lower():
+                                    temp_student_object = students_list[index]
+                                    print("Name: " + temp_student_object.name + "\nFocus Area 1: " + temp_student_object.focus1
+                                          + "\nFocus 1 Teachers: ", end="")
+                                    print(*temp_student_object.focus1_teachers, sep=", ")
+                                    print("Focus Area 2: " + temp_student_object.focus2 + "\nFocus 2 Teachers: ", end="")
+                                    print(*temp_student_object.focus2_teachers, sep=", ")
+                                    print("Adviser: " + temp_student_object.adviser)
                     elif user_input == "back":
                         break
                     else:
                         print("Invalid Command")
-
-
+            elif user_input == "back":
+                break
+            else:
+                print("Invalid Command")
     elif mode == "teacher":
         while mode == "teacher":
-            print("Available Commands: " + commands_teacher + "\nEnter Command: ")
-            commands(input("").lower())
+            print("Commands: " + commands_teacher + "\nEnter Command: ")
+            user_input = input("").strip().lower()
+            # if user_input == ""
+    elif mode == "assigner":
+        while mode == "assigner":
+            print("Commands: " + commands_assigner + "\nEnter Command: ")
+            user_input = input("").strip().lower()
+            if user_input == "sort":
+                print("Sort what?: ")
+                print("Commands: " + commands_assigner_sort + "\nEnter Command: ")
+                user_input = input("").strip().lower()
+                if user_input == "sort time":
+                    for index in teachers_list:
+                        teacher = teachers_list[index]
+                        if teacher.start_time <= 0900 and teacher.end_time >= 1100:
+                            teacher.time_range.append(1)
+                        if teacher.start_time <= 1100 and teacher.end_time >= 1400:
+                            teacher.time_range.append(2)
     else:
         print("Invalid Command")
 
