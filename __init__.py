@@ -100,7 +100,7 @@ while True:
                         if teacher.start_time <= 1300 and teacher.end_time >= 1500:
                             teacher.time_range.append(3)
                             print("Time range add 3")
-                if user_input == ""
+                # if user_input == "":
 
 
     else:
