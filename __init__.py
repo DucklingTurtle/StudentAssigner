@@ -5,15 +5,15 @@ commands_student = "Create Student, See Students, Remove Student"
 commands_student_stats = "Student Stats, Back"
 commands_teacher = "Create Teacher, See Teachers, Remove Teacher"
 commands_assigner = "Sort"
-commands_assigner_sort = ""
+commands_assigner_sort = "Sort Time"
 mode = "init"
 students_list = [
     classes.Student("Test_first Test_last", "Test Focus 1", "Test Focus 2"),
     classes.Student("Amanda Panda", "Sound Engineering", "Programming")
 ]
 teachers_list = [
-    classes.Teacher("Test_first1 Test_last2", "Test Focus 1", 0650, 1230),
-    classes.Teacher("Panda Amanda", "Test Focus 2", 0830, 1430)
+    classes.Teacher("Test_first1 Test_last2", "Test Focus 1", 650, 1230),
+    classes.Teacher("Panda Amanda", "Test Focus 2", 830, 1430)
 ]
 advisers = []
 print("Welcome to Assigner Program!")
@@ -87,13 +87,22 @@ while True:
                 print("Sort what?: ")
                 print("Commands: " + commands_assigner_sort + "\nEnter Command: ")
                 user_input = input("").strip().lower()
+                # sorts time by chunks
                 if user_input == "sort time":
-                    for index in teachers_list:
+                    for index in range(len(teachers_list)):
                         teacher = teachers_list[index]
-                        if teacher.start_time <= 0900 and teacher.end_time >= 1100:
+                        if teacher.start_time <= 900 and teacher.end_time >= 1100:
                             teacher.time_range.append(1)
-                        if teacher.start_time <= 1100 and teacher.end_time >= 1400:
+                            print("Time range add 1")
+                        if teacher.start_time <= 1100 and teacher.end_time >= 1300:
                             teacher.time_range.append(2)
+                            print("Time range add 2")
+                        if teacher.start_time <= 1300 and teacher.end_time >= 1500:
+                            teacher.time_range.append(3)
+                            print("Time range add 3")
+                if user_input == ""
+
+
     else:
         print("Invalid Command")
 
