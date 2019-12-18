@@ -1,9 +1,16 @@
-import classes
+import classes, gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
+# google sheets
+scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name("Student-Assigner-a750717f4d2a.json", scope)
+client = gspread.authorize(creds)
+sheet = client.open("Teacher Input Sheet").sheet1
+# init
 commands_list = "Student Input, Teacher Input, Assigner"
 commands_student = "Create Student, See Students, Remove Student"
 commands_student_stats = "Student Stats, Back"
-commands_teacher = "Create Teacher, See Teachers, Remove Teacher"
+commands_teacher = "Create Teachers, See Teachers, Remove Teacher"
 commands_assigner = "Sort"
 commands_assigner_sort = "Sort Time"
 mode = "init"
@@ -12,8 +19,8 @@ students_list = [
     classes.Student("Amanda Panda", "Sound Engineering", "Programming")
 ]
 teachers_list = [
-    classes.Teacher("Test_first1 Test_last2", "Test Focus 1", 650, 1230),
-    classes.Teacher("Panda Amanda", "Test Focus 2", 830, 1430)
+    classes.Teacher("Test_first1 Test_last2", "Test Focus 1"),
+    classes.Teacher("Panda Amanda", "Test Focus 2")
 ]
 advisers = []
 print("Welcome to Assigner Program!")
@@ -78,7 +85,15 @@ while True:
         while mode == "teacher":
             print("Commands: " + commands_teacher + "\nEnter Command: ")
             user_input = input("").strip().lower()
-            # if user_input == ""
+            if user_input == "create teachers":
+                print("Creating teachers...")
+                # get names
+                for index in range(1, len(sheet.col_values(2))):
+                    print(range(len(sheet.col_values(2))))
+                    print(range(1 ,len(sheet.col_values(2))))
+                    t_name = sheet.cell(index, 2)
+                name_col = sheet.col_values(2)
+                print(name_col)
     elif mode == "assigner":
         while mode == "assigner":
             print("Commands: " + commands_assigner + "\nEnter Command: ")
@@ -100,7 +115,7 @@ while True:
                         if teacher.start_time <= 1300 and teacher.end_time >= 1500:
                             teacher.time_range.append(3)
                             print("Time range add 3")
-                # if user_input == "":
+                # if user_input == "sort ":
 
 
     else:

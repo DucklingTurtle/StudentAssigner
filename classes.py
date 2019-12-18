@@ -8,10 +8,8 @@ class Student:
         self.focus2_teachers = ["Run teacher matcher"]
 
 class Teacher:
-    def __init__(self, name, focus, start_time, end_time):
+    def __init__(self, name, focus):
         self.name = name
         self.focus = focus
-        self.start_time = start_time
-        self.end_time = end_time
         self.time_range = []
         self.student = ""
