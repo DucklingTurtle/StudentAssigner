@@ -1,12 +1,10 @@
-import classes, gspread
+import classes, teachers_sheet, gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# google sheets
-scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("Student-Assigner-a750717f4d2a.json", scope)
-client = gspread.authorize(creds)
-sheet = client.open("Teacher Input Sheet").sheet1
-# init
+# teachers sheet
+t_sheet = teachers_sheet.sheet
+
+# # init
 commands_list = "Student Input, Teacher Input, Assigner"
 commands_student = "Create Student, See Students, Remove Student"
 commands_student_stats = "Student Stats, Back"
@@ -19,8 +17,8 @@ students_list = [
     classes.Student("Amanda Panda", "Sound Engineering", "Programming")
 ]
 teachers_list = [
-    classes.Teacher("Test_first1 Test_last2", "Test Focus 1"),
-    classes.Teacher("Panda Amanda", "Test Focus 2")
+    classes.Teacher("Test_first1 Test_last2", "Test Focus 1", [1, 2]),
+    classes.Teacher("Panda Amanda", "Test Focus 2", [1, 3])
 ]
 advisers = []
 print("Welcome to Assigner Program!")
@@ -69,6 +67,7 @@ while True:
                                     temp_student_object = students_list[index]
                                     print("Name: " + temp_student_object.name + "\nFocus Area 1: " + temp_student_object.focus1
                                           + "\nFocus 1 Teachers: ", end="")
+                                    # asterisks may print out list, check into later
                                     print(*temp_student_object.focus1_teachers, sep=", ")
                                     print("Focus Area 2: " + temp_student_object.focus2 + "\nFocus 2 Teachers: ", end="")
                                     print(*temp_student_object.focus2_teachers, sep=", ")
@@ -87,12 +86,12 @@ while True:
             user_input = input("").strip().lower()
             if user_input == "create teachers":
                 print("Creating teachers...")
-                # get names
-                name_col = sheet.col_values(2)
-                focus_col = sheet.col_values(3)
-                hours_col = sheet.col_values(4)
+                # get data for teachers
+                name_col = t_sheet.col_values(2)
+                focus_col = t_sheet.col_values(3)
+                hours_col = t_sheet.col_values(4)
                 # starts at index 2 to prevent errors from 0 and to not get the header, gets range of teachers
-                for index in range(2, (len(sheet.col_values(2))) + 1):
+                for index in range(2, (len(t_sheet.col_values(2))) + 1):
                     index2 = index - 1
                     t_name = name_col[index2]
                     t_focus = focus_col[index2]
@@ -109,6 +108,10 @@ while True:
                     print(t_name)
                     print(t_focus)
                     print(t_hours)
+                    teachers_list.append(classes.Teacher(t_name, t_focus, t_hours))
+            if user_input == "see teachers":
+                for teacher in teachers_list:
+                    print(teacher.name)
     elif mode == "assigner":
         while mode == "assigner":
             print("Commands: " + commands_assigner + "\nEnter Command: ")
