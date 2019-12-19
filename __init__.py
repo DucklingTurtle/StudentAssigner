@@ -88,12 +88,27 @@ while True:
             if user_input == "create teachers":
                 print("Creating teachers...")
                 # get names
-                for index in range(1, len(sheet.col_values(2))):
-                    print(range(len(sheet.col_values(2))))
-                    print(range(1 ,len(sheet.col_values(2))))
-                    t_name = sheet.cell(index, 2)
                 name_col = sheet.col_values(2)
-                print(name_col)
+                focus_col = sheet.col_values(3)
+                hours_col = sheet.col_values(4)
+                # starts at index 2 to prevent errors from 0 and to not get the header, gets range of teachers
+                for index in range(2, (len(sheet.col_values(2))) + 1):
+                    index2 = index - 1
+                    t_name = name_col[index2]
+                    t_focus = focus_col[index2]
+                    t_hours_pre = hours_col[index2]
+                    t_hours_pre = list(t_hours_pre.split(", "))
+                    t_hours = []
+                    for scan in t_hours_pre:
+                        if scan == "9 AM - 11 AM":
+                            t_hours.append(1)
+                        if scan == "11 AM - 1 PM":
+                            t_hours.append(2)
+                        if scan == "1 PM - 3 PM":
+                            t_hours.append(3)
+                    print(t_name)
+                    print(t_focus)
+                    print(t_hours)
     elif mode == "assigner":
         while mode == "assigner":
             print("Commands: " + commands_assigner + "\nEnter Command: ")
@@ -116,8 +131,6 @@ while True:
                             teacher.time_range.append(3)
                             print("Time range add 3")
                 # if user_input == "sort ":
-
-
     else:
         print("Invalid Command")
 
