@@ -1,9 +1,16 @@
-print("Importing repositories...")
+print("Importing packages...")
 import classes, teachers_sheet, students_sheet, sys, gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 # teachers sheet and student sheet
 t_sheet = teachers_sheet.sheet
 s_sheet = students_sheet.sheet
+
+# sheets init
+scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name("Student-Assigner-a750717f4d2a.json", scope)
+client = gspread.authorize(creds)
+gc = gspread.authorize(creds)
 
 # init
 help_list = "To use app, first you must import data"
@@ -28,6 +35,7 @@ teachers_list = [
 ]
 
 def sort():
+    # does not work because teachers are being rewritten, remove teachers once used from pool
     for block in range(3):
         # block 1
         if block == 0:
@@ -205,9 +213,55 @@ def create_teachers():
         print(t_hours)
         teachers_list.append(classes.Teacher(t_name, t_focus, t_hours))
 
-def print_to_excel():
+def export_to_sheets():
+    # init sheet
+    # student sheet
+    sh1 = gc.create("Students Sorted")
+    ws1 = sh1.get_worksheet(0)
+    ws1.update_cell(1, 1, "Name")
+    ws1.update_cell(1, 2, "Adviser")
+    ws1.update_cell(1, 3, "Focus 1 Teachers")
+    ws1.update_cell(1, 4, "Focus 2 Teachers")
+    ws1.update_cell(1, 5, "Testing Hours")
+    sh1.share("studentassigner@gmail.com", perm_type="user", role="writer")
+    # teacher sheet
+    sh2 = gc.create("Teachers Sorted")
+    ws2 = sh2.get_worksheet(0)
+    ws2.update_cell(1, 1, "Name")
+    ws2.update_cell(1, 2, "Hours")
+    ws2.update_cell(1, 3, "Focus")
+    ws2.update_cell(1, 4, "Students and Time")
+    sh1.share("studentassigner@gmail.com", perm_type="user", role="writer")
+    # write to sheets
+    # student
+    for index in range(len(students_list)):
+        cell = index + 2
+        # name
+        ws1.update_cell(cell, 1, str(students_list[index].name))
+        # adviser
+        ws1.update_cell(cell, 2, str(students_list[index].adviser))
+        # focus 1 teachers
+        ws1.update_cell(cell, 3, str(students_list[index].focus1_teachers)[1:-1])
+        # focus 2 teachers
+        ws1.update_cell(cell, 4, str(students_list[index].focus2_teachers)[1:-1])
+        # testing hours
+        hours = []
+        if 1 in students_list[index].hours:
+            hours.append("9AM-11AM")
+        if 2 in students_list[index].hours:
+            hours.append("11AM-1PM")
+        if 3 in students_list[index].hours:
+            hours.append("1PM-3PM")
+        ws1.update_cell(cell, 5, str(hours)[1:-1])
 
-
+# def write_to_sheets():
+#     global ws1
+#     global ws2
+#     # student
+#     # name
+#     for index in range(len( students_list)):
+#         cell = index + 2
+#         ws1.update_cell(cell, 1, str(students_list[index]))
 
 print("Welcome to teacher/student sorter!\nIf lost, enter \"help\", otherwise, enter \"import data\" to start")
 while True:
@@ -227,6 +281,7 @@ while True:
             # sort
             sort()
             # excel sheet
+            export_to_sheets()
         else:
             sys.exit()
 
