@@ -25,8 +25,8 @@ focus_list = [
     "AP", "CP", "IR", "MT", "TH"
 ]
 students_list = [
-    classes.Student("Osvaldo Last", "AP", "IR", "Adviser 1"),
-    classes.Student("Amanda Panda", "CP", "TH", "Adviser 2")
+    # classes.Student("Osvaldo Last", "AP", "IR", "Adviser 1"),
+    # classes.Student("Amanda Panda", "CP", "TH", "Adviser 2")
 ]
 teachers_list = [
     classes.Teacher("Test_first1 Test_last2", "CP", [1, 2]),
@@ -45,25 +45,30 @@ def sort():
             for teacher in range(len(teachers_list)):
                 if teachers_list[teacher].student1 == "" and 1 in teachers_list[teacher].hours:
                     teacher_pool.append(teachers_list[teacher])
+            for teacher in teacher_pool:
+                print("Teacher pool: " + teacher.name)
             # check if students have teacher, if not, add to pool
             student_pool = []
             for student in range(len(students_list)):
-                if len(students_list[student].focus1_teachers) < 2:
+                if len(students_list[student].focus1_teachers) < 2 or len(students_list[student].focus2_teachers) < 2:
                     student_pool.append(students_list[student])
-                elif len(students_list[student].focus2_teachers) < 2:
-                    student_pool.append(students_list[student])
+                # elif len(students_list[student].focus2_teachers) < 2:
+                #     student_pool.append(students_list[student])
             for student in student_pool:
                 print("Student pool: " + student.name)
             # loops through student pool
             if len(student_pool) > 0 and len(teacher_pool) > 0:
                 # runs twice because it needs to do both focus'
+                index = 0
                 for i in range(2):
                     for student in student_pool:
                         for teacher in teacher_pool:
+                            # index +1
                             if student.focus1 == teacher.focus and teacher.student1 == "" and i == 0:
                                 if len(student.focus1_teachers) < 2:
                                     student.focus1_teachers.append(teacher.name)
                                     teacher.student1 = student.name
+                                    teacher_pool.remove(teacher)
                                     if 1 not in student.hours:
                                         student.hours.append(1)
                                     print(student.name)
@@ -73,11 +78,14 @@ def sort():
                                 if len(student.focus2_teachers) < 2:
                                     student.focus2_teachers.append(teacher.name)
                                     teacher.student1 = student.name
+                                    teacher_pool.remove(teacher)
                                     if 1 not in student.hours:
                                         student.hours.append(1)
                                     print(student.name)
                                     print(teacher.name)
                                     print("-works-")
+                        if len(student.focus1_teachers) >= 2 and len(student.focus2_teachers) >= 2:
+                            student_pool.remove(student)
             else:
                 print("Error: not enough students/teachers in pool")
         # block 2
@@ -87,13 +95,15 @@ def sort():
             for teacher in range(len(teachers_list)):
                 if teachers_list[teacher].student2 == "" and 2 in teachers_list[teacher].hours:
                     teacher_pool.append(teachers_list[teacher])
+            for teacher in teacher_pool:
+                print("Teacher pool: " + teacher.name)
             # check if students have teacher, if not, add to pool
             student_pool = []
             for student in range(len(students_list)):
-                if len(students_list[student].focus1_teachers) < 2:
+                if len(students_list[student].focus1_teachers) < 2 or len(students_list[student].focus2_teachers) < 2:
                     student_pool.append(students_list[student])
-                elif len(students_list[student].focus2_teachers) < 2:
-                    student_pool.append(students_list[student])
+                # elif len(students_list[student].focus2_teachers) < 2:
+                #     student_pool.append(students_list[student])
             for student in student_pool:
                 print("Student pool: " + student.name)
             # loops through student pool
@@ -106,6 +116,11 @@ def sort():
                                 if len(student.focus1_teachers) < 2:
                                     student.focus1_teachers.append(teacher.name)
                                     teacher.student2 = student.name
+                                    teacher_pool.remove(teacher)
+                                    print("teacher name: " + teacher.name)
+                                    print(teacher_pool)
+                                    if 2 not in student.hours:
+                                        student.hours.append(2)
                                     print(student.name)
                                     print(teacher.name)
                                     print("-Works- Block 2")
@@ -113,9 +128,14 @@ def sort():
                                 if len(student.focus2_teachers) < 2:
                                     student.focus2_teachers.append(teacher.name)
                                     teacher.student2 = student.name
+                                    teacher_pool.remove(teacher)
+                                    if 2 not in student.hours:
+                                        student.hours.append(2)
                                     print(student.name)
                                     print(teacher.name)
                                     print("-works- Block 2")
+                        if len(student.focus1_teachers) >= 2 and len(student.focus2_teachers) >= 2:
+                            student_pool.remove(student)
             else:
                 print("Error: not enough students/teachers in pool")
         elif block == 2:
@@ -125,13 +145,15 @@ def sort():
             for teacher in range(len(teachers_list)):
                 if teachers_list[teacher].student3 == "" and 3 in teachers_list[teacher].hours:
                     teacher_pool.append(teachers_list[teacher])
+            for teacher in teacher_pool:
+                print("Teacher pool: " + teacher.name)
             # check if students have teacher, if not, add to pool
             student_pool = []
             for student in range(len(students_list)):
-                if len(students_list[student].focus1_teachers) < 2:
+                if len(students_list[student].focus1_teachers) < 2 or len(students_list[student].focus2_teachers) < 2:
                     student_pool.append(students_list[student])
-                elif len(students_list[student].focus2_teachers) < 2:
-                    student_pool.append(students_list[student])
+                # elif len(students_list[student].focus2_teachers) < 2:
+                #     student_pool.append(students_list[student])
             for student in student_pool:
                 print("Student pool: " + student.name)
             # loops through student pool
@@ -144,8 +166,9 @@ def sort():
                                 if len(student.focus1_teachers) < 2:
                                     student.focus1_teachers.append(teacher.name)
                                     teacher.student3 = student.name
-                                    if 1 not in student.hours:
-                                        student.hours.append(1)
+                                    teacher_pool.remove(teacher)
+                                    if 3 not in student.hours:
+                                        student.hours.append(3)
                                     print(student.name)
                                     print(teacher.name)
                                     print("-Works-")
@@ -153,11 +176,14 @@ def sort():
                                 if len(student.focus2_teachers) < 2:
                                     student.focus2_teachers.append(teacher.name)
                                     teacher.student3 = student.name
-                                    if 1 not in student.hours:
-                                        student.hours.append(1)
+                                    teacher_pool.remove(teacher)
+                                    if 3 not in student.hours:
+                                        student.hours.append(3)
                                     print(student.name)
                                     print(teacher.name)
                                     print("-works-")
+                        if len(student.focus1_teachers) >= 2 and len(student.focus2_teachers) >= 2:
+                            student_pool.remove(student)
             else:
                 print("Error: not enough students/teachers in pool")
 
