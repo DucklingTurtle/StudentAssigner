@@ -13,6 +13,8 @@ class Teacher:
     def __init__(self, name, focus, hours):
         self.name = name
         self.focus = focus
+        # add focus2 feature later
+        self.focus2 = ""
         self.hours = hours
         self.student1 = ""
         self.student2 = ""
