@@ -6,8 +6,10 @@ class Student:
         self.focus2 = focus2
         self.focus1_teachers = []
         self.focus2_teachers = []
-        self.hours = []
-        self.first_test = False
+        self.focus1_hour = []
+        self.focus2_hour = []
+        self.hours = {}
+        self.hours_cant = []
 
 class Teacher:
     def __init__(self, name, focus, hours):
@@ -17,5 +19,8 @@ class Teacher:
         self.focus2 = ""
         self.hours = hours
         self.student1 = ""
+        self.student1_obj = ""
         self.student2 = ""
+        self.student2_obj = ""
         self.student3 = ""
+        self.student3_obj = ""
