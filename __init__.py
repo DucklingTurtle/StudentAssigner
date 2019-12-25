@@ -49,13 +49,12 @@ def sort():
                     if teacher.focus == student.focus1:
                         # focus 1, if nothing in teacher list for students
                         if len(student.focus1_teachers) <= 0:
-                            # add teacher obj reference to student focus1 teachers list
-                            student.focus1_teachers.append(teacher)
-                            # add hours to student
-                            student.focus1_hour = teacher.hours[0]
+                            # teacher changes
                             # add student obj reference to teacher
                             teacher.student1_obj = student
-                            # cleaning up data for student 1
+                            # add student hours to teacher
+                            s_name = student.name
+                            # first available teacher hour, teacher is master
                             t_hours = teacher.hours[0]
                             if t_hours == 1:
                                 t_hours = "9AM-11AM"
@@ -63,8 +62,12 @@ def sort():
                                 t_hours = "11AM-1PM"
                             elif t_hours == 3:
                                 t_hours = "1PM-3PM"
-                            s_name = student.name
                             teacher.student1 = str(s_name + t_hours)
+                            # student changes
+                            # add teacher obj reference to student focus1 teachers list
+                            student.focus1_teachers.append(teacher)
+                            # add hours to student
+                            student.focus1_hour = teacher.hours[0]
                             print("New teacher added" + teacher.name)
                             print("Student name: " + student.name)
                         else:
