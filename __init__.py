@@ -41,7 +41,6 @@ def sort():
     for t_index, teacher in enumerate(teachers_list):
         for s_index, student in enumerate(students_list):
             # teacher checks
-            # check if teacher has a student
             if teacher.student1 == "":
                 # checks if focus matches for either group
                 if teacher.focus == student.focus1 or teacher.focus == student.focus2:
@@ -62,27 +61,48 @@ def sort():
                                 t_hours = "11AM-1PM"
                             elif t_hours == 3:
                                 t_hours = "1PM-3PM"
-                            teacher.student1 = str(s_name + t_hours)
+                            teacher.student1 = s_name + str(t_hours)
                             # student changes
                             # add teacher obj reference to student focus1 teachers list
                             student.focus1_teachers.append(teacher)
                             # add hours to student
                             student.focus1_hour = teacher.hours[0]
-                            print("New teacher added" + teacher.name)
+                            print("New teacher added")
                             print("Student name: " + student.name)
+                            print("Teacher name: " + teacher.name)
                         else:
-                            # otherwise, if first teacher in students list = students focus 1 and less than 2 items in list
-                            if student.focus1_teachers[0].focus == student.focus1 and len(student.focus1_teachers) <= 1:
-                                # if any of the hours for the first teacher in the new teacher
-                                if any(student.focus1_teachers[0].hours) in teacher.hours:
-                                    # goes through all three different time slots
-                                    if student.focus1_teachers[0].hours[0] in teacher.hours:
-                                        # add student name + hour to student 1
-                                        time_slot = student.focus1_teachers[0].hours[0]
-                                        print("Teacher: " + teacher.name)
-                                        print("Student: " + student.name)
-                                        print("Time slot: " + str(time_slot))
-                                        print("teacher hours: " + str(teacher.hours[0]))
+                            # otherwise, if first teacher in students list = teachers focus 1 and less than 2 items in list
+                            if student.focus1_teachers[0].focus == teacher.focus and len(student.focus1_teachers) <= 1:
+                                # if any of the hours for new teacher in first teacher
+                                if any(teacher.hours) == student.focus1_teachers[0].hours[0]:
+                                    # teacher changes
+                                    # add student obj reference
+                                    teacher.student1_obj = student
+                                    # add student hours to teacher
+                                    s_name = student.name
+                                    t_hours = student.focus1_teachers[0]
+                                    if t_hours == 1:
+                                        t_hours = "9AM-11AM"
+                                    elif t_hours == 2:
+                                        t_hours = "11AM-1PM"
+                                    elif t_hours == 3:
+                                        t_hours = "1PM-3PM"
+                                    teacher.student1 = s_name + str(t_hours)
+                                    # student changes
+                                    # add teacher obj reference to student
+                                    student.focus1_teachers.append(teacher)
+                                    # add hours to student
+                                    if student.focus1_hour == teacher.hours[0]:
+                                        print("Works adding teacher to master")
+                                    else:
+                                        print("Error adding teacher to focus 1")
+                                    time_slot = student.focus1_teachers[0].hours[0]
+                                    print("Teacher: " + teacher.name)
+                                    print("Student: " + student.name)
+                                    print("Time slot: " + str(time_slot))
+                                    print(student.focus1_hour)
+                                    print("teacher hours: " + str(teacher.hours[0]))
+                                    print("master teacher hours" + str(student.focus1_teachers[0].hours[0]))
 
 #  test to see if first creation block works, then finish the second one, make sure master teacher is the one dictating the hours
 

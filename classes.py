@@ -20,7 +20,10 @@ class Teacher:
         self.hours = hours
         self.student1 = ""
         self.student1_obj = ""
+        self.student1_time = ""
         self.student2 = ""
         self.student2_obj = ""
+        self.student2_time = ""
         self.student3 = ""
         self.student3_obj = ""
+        self.student3_time = ""
