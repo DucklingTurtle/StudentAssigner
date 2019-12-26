@@ -33,16 +33,60 @@ teachers_list = [
     classes.Teacher("Panda Amanda", "IR", [1, 3]),
     classes.Teacher("First3 Last3", "AP", [1, 2])
 ]
+
+def verify():
+    for student in students_list:
+        t_list = list(student.focus1_t)
+        t_name = t_list[0]
+        t_list2 = list(student.focus2_t)
+        t_name2 = t_list[0]
+        # check if focus1 matches focus1 list
+        if student.focus1 == student.focus1_obj[0].focus:
+            continue
+        # check if focus1_obj = focus1_list
+        elif student.focus1_obj[0].focus == student.focus1_t[t_name].focus:
+            continue
+        # check if focus2 matches focus2 list
+        elif student.focus2 == student.focus2_obj[0].focus:
+            continue
+        elif student.focus2_obj[0].focus == student.focus2_t[t_name2].focus:
+            continue
+        else:
+            print(student.name + " failed to pass verification")
 def match_first(focus, teacher, student):
-    # t_time = random.choice(teacher.hours)
-    t_time = teacher.hours[0]
+    print("In match_first")
+    t_time = random.choice(teacher.hours)
+    while True:
+        if focus == 1:
+            print("In focus 1")
+            if len(student.focus2_t) >= 1:
+                s_teacher_list = list(student.focus2_t)
+                name_teacher = s_teacher_list[0]
+                if t_time != student.focus2_t[name_teacher]:
+                    break
+                else:
+                    if len(teacher.hours) > 1:
+                        t_time = random.choice(teacher.hours)
+                    else:
+                        return
+            else:
+                break
+        elif focus == 2:
+            if len(student.focus1_t) >= 1:
+                s_teacher_list = list(student.focus1_t)
+                name_teacher = s_teacher_list[0]
+                if t_time != student.focus1_t[name_teacher]:
+                    break
+                else:
+                    if len(teacher.hours) > 1:
+                        t_time = random.choice(teacher.hours)
+                    else:
+                        return
+            else:
+                break
+        else:
+            print("Error: no focus")
     teacher.first_pass = True
-    # if t_time_orig == 1:
-    #     t_time = "9AM-11AM"
-    # elif t_time_orig == 2:
-    #     t_time = "11AM-1PM"
-    # elif t_time_orig == 3:
-    #     t_time = "1PM-3PM"
     print("time: " + str(t_time))
     print("Student name: " + student.name)
     print("teacher name: " + teacher.name)
@@ -58,6 +102,7 @@ def match_first(focus, teacher, student):
         teacher.students[str(student.name)] = t_time
 
 def match_continue(focus, teacher, student):
+    print("in match_continute")
     if focus == 1:
         s_teacher_list = list(student.focus1_t)
         teacher1 = student.focus1_t[s_teacher_list[0]]
@@ -89,7 +134,7 @@ def match_continue(focus, teacher, student):
 
 def sort():
     # run first block, then second
-    for loop in range(2):
+    for loop in range(3):
         for student in students_list:
             for teacher in teachers_list:
                 if loop == 0:
@@ -99,16 +144,20 @@ def sort():
                                 if teacher.focus == student.focus1:
                                     print("test")
                                     if len(student.focus1_t) <= 0:
+                                        print(student.name)
                                         match_first(1, teacher, student)
                                         print("Focus 1")
                                 elif teacher.focus == student.focus2:
                                     print("test2")
                                     if len(student.focus2_t) <= 0:
+                                        print(student.name)
                                         match_first(2, teacher, student)
                                         print("Focus 2")
-                elif loop == 1:
-                    print("loop2")
+                elif loop == 1 or loop == 2:
+                    print("In Loop 2")
+                    print(loop)
                     print(student.name)
+                    print(teacher.name)
                     print(teacher.focus)
                     print(student.focus1)
                     print(student.focus2)
@@ -116,32 +165,39 @@ def sort():
                     print(student.focus1_t)
                     print(len(student.focus2_t))
                     print(student.focus2_t)
-                    if teacher.focus == student.focus1 and len(student.focus1_t) <= 1:
+                    print(teacher.hours)
+                    if teacher.focus == student.focus1 and len(student.focus1_t) == 1:
+                        print("In Focus 1 Loop 2")
                         if teacher.name != student.focus1_obj[0].name:
-                            print("loop2")
-                            print(loop)
+                            print("In name comparison, Focus 1 Loop 2")
                             # # turns student's focus1 t dictionary in a list, index = lists first obj
                             # s_teacher_list = list(student.focus1_t)
                             # index = s_teacher_list[0]
                             # print(index)
                             if student.focus1_obj[0].focus == teacher.focus:
+                                print("In focus = teacher focus, Focus 1 Loop 2")
                                 s_teacher_list = list(student.focus1_t)
                                 name_teacher = s_teacher_list[0]
-                                if any(teacher.hours) == student.focus1_t[name_teacher]:
+                                if student.focus1_t[name_teacher] in teacher.hours:
+                                    print("In any function, Focus 1 Loop 2")
                                     match_continue(1, teacher, student)
-                    elif teacher.focus == student.focus2 and len(student.focus2_t) <= 1:
+                    elif teacher.focus == student.focus2 and len(student.focus2_t) == 1:
+                        print("In Focus 2 Loop 2")
                         if teacher.name != student.focus2_obj[0].name:
+                            print("In name comparison Focus 2 Loop 2")
                             # # turns student's focus1 t dictionary in a list, index = lists first obj
                             # s_teacher_list = list(student.focus1_t)
                             # index = s_teacher_list[0]
                             # print(index)
                             if student.focus2_obj[0].focus == teacher.focus:
+                                print("In focus = teacher focus, Focus 1 Loop 2")
                                 s_teacher_list = list(student.focus2_t)
                                 name_teacher = s_teacher_list[0]
-                                if any(teacher.hours) == student.focus2_t[name_teacher]:
+                                if student.focus2_t[name_teacher] in teacher.hours:
+                                    print("In any function, Focus 1 Loop 2")
                                     match_continue(2, teacher, student)
                     else:
-                        print("Error: student has more or less than 1 teacher")
+                        print("Error: No matching focus, or student has more or less than 1 teacher")
 
 def create_students():
     print("Creating students...")
@@ -152,7 +208,6 @@ def create_students():
     s_focus2_col = s_sheet.col_values(5)
     s_adviser_col = s_sheet.col_values(6)
     # starts at index 2 to prevent errors from 0 and to not get the header, gets range of teachers
-    # for index in range(2, (len(s_sheet.col_values(2))) + 1):
     for index in range(1, len(s_sheet.col_values(2))):
         s_name = s_f_name_col[index] + " " + s_l_name_col[index]
         print("Name: " + s_name)
@@ -233,19 +288,26 @@ def export_to_sheets():
                 ws1.update_cell(cell, 3, str(student.focus1_obj[0].name))
                 print("works1")
             if loop == 1:
-                # focus 1 teacher 2
-                ws1.update_cell(cell, 4, str(student.focus1_obj[1].name))
-                print("works2")
+                try:
+                    # focus 1 teacher 2
+                    ws1.update_cell(cell, 4, str(student.focus1_obj[1].name))
+                    print("works2")
+                except:
+                    print("Error! Student missing second focus 1 teacher. Student Name: " + student.name)
         for loop2 in range(2):
             if loop2 == 0:
                 # focus 2 teacher 1
                 ws1.update_cell(cell, 5, str(student.focus2_obj[0].name))
                 print("works3")
             if loop2 == 1:
-                # focus 2 teacher 2
-                ws1.update_cell(cell, 6, str(student.focus2_obj[1].name))
-                print("works4")
+                try:
+                    # focus 2 teacher 2
+                    ws1.update_cell(cell, 6, str(student.focus2_obj[1].name))
+                    print("works4")
+                except:
+                    print("Error! Student missing second focus 2 teacher. Student Name: " + student.name)
         # hours
+        # get first teacher's time
         s_teacher_list = list(student.focus1_t)
         hold_time = s_teacher_list[0]
         focus1_time = student.focus1_t[hold_time]
@@ -255,6 +317,7 @@ def export_to_sheets():
             focus1_time = "11AM-1PM"
         elif focus1_time == 3:
             focus1_time = "1PM-3PM"
+        # get first teacher's time
         s_teacher_list = list(student.focus2_t)
         hold_time = s_teacher_list[0]
         focus2_time = student.focus2_t[hold_time]
@@ -266,15 +329,6 @@ def export_to_sheets():
             focus2_time = "1PM-3PM"
         ws1.update_cell(cell, 7, str(focus1_time))
         ws1.update_cell(cell, 8, str(focus2_time))
-        # ws1.update_cell(cell, 4, str(students_list[index].focus2_teachers)[1:-1])
-# def write_to_sheets():
-#     global ws1
-#     global ws2
-#     # student
-#     # name
-#     for index in range(len( students_list)):
-#         cell = index + 2
-#         ws1.update_cell(cell, 1, str(students_list[index]))
 
 print("Welcome to teacher/student sorter!\nIf lost, enter \"help\", otherwise, enter \"import data\" to start")
 while True:
@@ -291,9 +345,8 @@ while True:
         print("Sort and print to excel sheet?\nY/N")
         user_input = input("").strip().lower()
         if user_input == "y":
-            # sort
             sort()
-            # excel sheet
             export_to_sheets()
+            verify()
         else:
             sys.exit()
