@@ -8,7 +8,7 @@ s_sheet = students_sheet.sheet
 
 # sheets init
 scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("credentials_studentassigner2.json", scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name("new_credentials.json", scope)
 client = gspread.authorize(creds)
 gc = gspread.authorize(creds)
 
@@ -36,23 +36,43 @@ teachers_list = [
 
 def verify():
     for student in students_list:
-        t_list = list(student.focus1_t)
-        t_name = t_list[0]
-        t_list2 = list(student.focus2_t)
-        t_name2 = t_list[0]
-        # check if focus1 matches focus1 list
-        if student.focus1 == student.focus1_obj[0].focus:
-            continue
-        # check if focus1_obj = focus1_list
-        elif student.focus1_obj[0].focus == student.focus1_t[t_name].focus:
-            continue
-        # check if focus2 matches focus2 list
-        elif student.focus2 == student.focus2_obj[0].focus:
-            continue
-        elif student.focus2_obj[0].focus == student.focus2_t[t_name2].focus:
-            continue
-        else:
-            print(student.name + " failed to pass verification")
+        # for teacher in teachers_list:
+            t_list = list(student.focus1_t)
+            t_name = t_list[0]
+            t_list2 = list(student.focus2_t)
+            t_name2 = t_list2[0]
+            t_hold = list(student.focus1_t)
+            # check if focus1 matches focus1 list
+            if student.focus1 == student.focus1_obj[0].focus:
+                pass
+            else:
+                print("Error: Focus 1 does not match Focus 1 Obj List")
+            # check if focus1_obj = focus1_list
+            if student.focus1_obj[0].name == t_name:
+                pass
+            else:
+                print("Error: Focus 1 Obj != Focus 1 list")
+            # check if focus2 matches focus2 list
+            if student.focus2 == student.focus2_obj[0].focus:
+                pass
+            else:
+                print("Error: Focus 2 != Focus 2 List")
+            # check if focus2_obj = focus2_list
+            if student.focus2_obj[0].name == t_name2:
+                pass
+            else:
+                print("Error: Focus 2 Obj not in Focus 2 List")
+            # check if all focus 1 teachers have the same time
+            try:
+                if student.focus1_t[t_hold[0]] == student.focus1_t[t_hold[1]]:
+                    pass
+                else:
+                    print("Error: Focus 1 teachers not equal")
+            except:
+                print(student.name + " missing focus 1 second teacher")
+            # check if all focus 2 teachers have the same time
+
+
 def match_first(focus, teacher, student):
     print("In match_first")
     t_time = random.choice(teacher.hours)
@@ -73,6 +93,7 @@ def match_first(focus, teacher, student):
                 break
         elif focus == 2:
             if len(student.focus1_t) >= 1:
+                print("In focus 2")
                 s_teacher_list = list(student.focus1_t)
                 name_teacher = s_teacher_list[0]
                 if t_time != student.focus1_t[name_teacher]:
@@ -86,51 +107,62 @@ def match_first(focus, teacher, student):
                 break
         else:
             print("Error: no focus")
+            return
     teacher.first_pass = True
     print("time: " + str(t_time))
     print("Student name: " + student.name)
     print("teacher name: " + teacher.name)
-    if focus == 1:
+    if focus == 1 and t_time not in teacher.hours_taken:
         # add teacher to student's focus1 teachers list, time is key, teacher obj is value
         student.focus1_t[str(teacher.name)] = t_time
         student.focus1_obj.append(teacher)
         # add student to teacher's student list, time is key, student obj is value
         teacher.students[str(student.name)] = t_time
-    if focus == 2:
+        teacher.hours_taken.append(t_time)
+        print("t_time: " + str(t_time))
+    if focus == 2 and t_time not in teacher.hours_taken:
         student.focus2_t[str(teacher.name)] = t_time
         student.focus2_obj.append(teacher)
         teacher.students[str(student.name)] = t_time
+        teacher.hours_taken.append(t_time)
 
 def match_continue(focus, teacher, student):
     print("in match_continute")
     if focus == 1:
         s_teacher_list = list(student.focus1_t)
-        teacher1 = student.focus1_t[s_teacher_list[0]]
-        time = s_teacher_list[0]
-        s_teacher_list = list(student.focus2_t)
-        name_teacher = s_teacher_list[0]
-        # student
-        student.focus1_obj.append(teacher)
-        student.focus1_t[teacher.name] = student.focus2_t[name_teacher]
-        print("teacher name: " + teacher.name)
-        print("First teacher: " + name_teacher)
-        print("student name: " + student.name)
-        # teacher
-        teacher.students[str(student.name)] = time
+        time_name = s_teacher_list[0]
+        time = student.focus1_t[time_name]
+        if time not in teacher.hours_taken:
+            s_teacher_list = list(student.focus1_t)
+            name_teacher = s_teacher_list[0]
+            # student
+            student.focus1_obj.append(teacher)
+            student.focus1_t[teacher.name] = student.focus1_t[name_teacher]
+            print("teacher name: " + teacher.name)
+            print("First teacher: " + name_teacher)
+            print("student name: " + student.name)
+            # teacher
+            teacher.students[str(student.name)] = student.focus1_t[name_teacher]
+            teacher.hours_taken.append(time)
+            print("hours to append: " + str(student.focus1_t[name_teacher]))
+            print("hours taken: " + str(teacher.hours_taken))
+            print(time)
     if focus == 2:
         s_teacher_list = list(student.focus2_t)
-        teacher1 = student.focus2_t[s_teacher_list[0]]
-        time = s_teacher_list[0]
-        s_teacher_list = list(student.focus2_t)
-        name_teacher = s_teacher_list[0]
-        # student
-        student.focus2_obj.append(teacher)
-        student.focus2_t[teacher.name] = student.focus2_t[name_teacher]
-        # teacher
-        teacher.students[student.name] = time
-        print("teacher name: " + teacher.name)
-        print("First teacher: " + name_teacher)
-        print("student name: " + student.name)
+        time_name = s_teacher_list[0]
+        time = student.focus2_t[time_name]
+        if time not in teacher.hours_taken:
+            name_teacher = s_teacher_list[0]
+            # student
+            student.focus2_obj.append(teacher)
+            student.focus2_t[teacher.name] = student.focus2_t[name_teacher]
+            # teacher
+            teacher.students[student.name] = student.focus2_t[name_teacher]
+            teacher.hours_taken.append(time)
+            print("teacher name: " + teacher.name)
+            print("First teacher: " + name_teacher)
+            print("student name: " + student.name)
+            print(teacher.hours_taken)
 
 def sort():
     # run first block, then second
@@ -165,6 +197,7 @@ def sort():
                     print(student.focus1_t)
                     print(len(student.focus2_t))
                     print(student.focus2_t)
+                    print("hours taken: " + str(teacher.hours_taken))
                     print(teacher.hours)
                     if teacher.focus == student.focus1 and len(student.focus1_t) == 1:
                         print("In Focus 1 Loop 2")
@@ -254,81 +287,98 @@ def export_to_sheets():
     # init sheet
     # student sheet
     # sh1 = gc.create("Students Sorted")
-    sh1 = gc.open("Students Sorted")
-    ws1 = sh1.get_worksheet(0)
-    ws1.update_cell(1, 1, "Name")
-    ws1.update_cell(1, 2, "Adviser")
-    ws1.update_cell(1, 3, "Focus 1 Teachers")
-    ws1.update_cell(1, 5, "Focus 2 Teachers")
-    ws1.update_cell(1, 7, "Focus 1 Hour")
-    ws1.update_cell(1, 8, "Focus 2 Hour")
-    sh1.share("studentassigner@gmail.com", perm_type="user", role="writer")
+    # sh1 = gc.open("Students Sorted")
+    # ws1 = sh1.get_worksheet(0)
+    # ws1.update_cell(1, 1, "Name")
+    # ws1.update_cell(1, 2, "Adviser")
+    # ws1.update_cell(1, 3, "Focus 1 Teachers")
+    # ws1.update_cell(1, 5, "Focus 2 Teachers")
+    # ws1.update_cell(1, 7, "Focus 1 Hour")
+    # ws1.update_cell(1, 8, "Focus 2 Hour")
+    # sh1.share("studentassigner@gmail.com", perm_type="user", role="writer")
     # teacher sheet
-    # sh2 = gc.create("Teachers Sorted")
-    # ws2 = sh2.get_worksheet(0)
-    # ws2.update_cell(1, 1, "Name")
-    # ws2.update_cell(1, 2, "Hours")
-    # ws2.update_cell(1, 3, "Focus")
-    # ws2.update_cell(1, 4, "Students and Time")
-    # sh2.share("studentassigner@gmail.com", perm_type="user", role="writer")
+    sh2 = gc.create("Teachers Sorted")
+    ws2 = sh2.get_worksheet(0)
+    ws2.update_cell(1, 1, "Name")
+    ws2.update_cell(1, 2, "Students and Time")
+    ws2.update_cell(1, 5, "Focus")
+    sh2.share("studentassigner@gmail.com", perm_type="user", role="writer")
     # write to sheets
     # student
-    for index in range(len(students_list)):
+    # for index in range(len(students_list)):
+    #     cell = index + 2
+    #     student = students_list[index]
+    #     # name
+    #     ws1.update_cell(cell, 1, str(student.name))
+    #     # adviser
+    #     ws1.update_cell(cell, 2, str(student.adviser))
+    #     # prints teachers out, needed for loop so it doesnt give an index error
+    #     for loop in range(2):
+    #         print(loop)
+    #         if loop == 0:
+    #             # focus 1 teacher 1
+    #             ws1.update_cell(cell, 3, str(student.focus1_obj[0].name))
+    #             print("works1")
+    #         if loop == 1:
+    #             try:
+    #                 # focus 1 teacher 2
+    #                 ws1.update_cell(cell, 4, str(student.focus1_obj[1].name))
+    #                 print("works2")
+    #             except:
+    #                 print("Error! Student missing second focus 1 teacher. Student Name: " + student.name)
+    #     for loop2 in range(2):
+    #         if loop2 == 0:
+    #             # focus 2 teacher 1
+    #             ws1.update_cell(cell, 5, str(student.focus2_obj[0].name))
+    #             print("works3")
+    #         if loop2 == 1:
+    #             try:
+    #                 # focus 2 teacher 2
+    #                 ws1.update_cell(cell, 6, str(student.focus2_obj[1].name))
+    #                 print("works4")
+    #             except:
+    #                 print("Error! Student missing second focus 2 teacher. Student Name: " + student.name)
+    #     # hours
+    #     # get first teacher's time
+    #     s_teacher_list = list(student.focus1_t)
+    #     hold_time = s_teacher_list[0]
+    #     focus1_time = student.focus1_t[hold_time]
+    #     if focus1_time == 1:
+    #         focus1_time = "9AM-11AM"
+    #     elif focus1_time == 2:
+    #         focus1_time = "11AM-1PM"
+    #     elif focus1_time == 3:
+    #         focus1_time = "1PM-3PM"
+    #     # get first teacher's time
+    #     s_teacher_list = list(student.focus2_t)
+    #     hold_time = s_teacher_list[0]
+    #     focus2_time = student.focus2_t[hold_time]
+    #     if focus2_time == 1:
+    #         focus2_time = "9AM-11AM"
+    #     elif focus2_time == 2:
+    #         focus2_time = "11AM-1PM"
+    #     elif focus2_time == 3:
+    #         focus2_time = "1PM-3PM"
+    #     ws1.update_cell(cell, 7, str(focus1_time))
+    #     ws1.update_cell(cell, 8, str(focus2_time))
+    # teacher
+    for index in range(len(teachers_list)):
         cell = index + 2
-        student = students_list[index]
+        teacher = teachers_list[index]
         # name
-        ws1.update_cell(cell, 1, str(student.name))
-        # adviser
-        ws1.update_cell(cell, 2, str(student.adviser))
-        # prints teachers out, needed for loop so it doesnt give an index error
-        for loop in range(2):
-            print(loop)
-            if loop == 0:
-                # focus 1 teacher 1
-                ws1.update_cell(cell, 3, str(student.focus1_obj[0].name))
-                print("works1")
-            if loop == 1:
-                try:
-                    # focus 1 teacher 2
-                    ws1.update_cell(cell, 4, str(student.focus1_obj[1].name))
-                    print("works2")
-                except:
-                    print("Error! Student missing second focus 1 teacher. Student Name: " + student.name)
-        for loop2 in range(2):
-            if loop2 == 0:
-                # focus 2 teacher 1
-                ws1.update_cell(cell, 5, str(student.focus2_obj[0].name))
-                print("works3")
-            if loop2 == 1:
-                try:
-                    # focus 2 teacher 2
-                    ws1.update_cell(cell, 6, str(student.focus2_obj[1].name))
-                    print("works4")
-                except:
-                    print("Error! Student missing second focus 2 teacher. Student Name: " + student.name)
+        ws2.update_cell(cell, 1, teacher.name)
         # hours
-        # get first teacher's time
-        s_teacher_list = list(student.focus1_t)
-        hold_time = s_teacher_list[0]
-        focus1_time = student.focus1_t[hold_time]
-        if focus1_time == 1:
-            focus1_time = "9AM-11AM"
-        elif focus1_time == 2:
-            focus1_time = "11AM-1PM"
-        elif focus1_time == 3:
-            focus1_time = "1PM-3PM"
-        # get first teacher's time
-        s_teacher_list = list(student.focus2_t)
-        hold_time = s_teacher_list[0]
-        focus2_time = student.focus2_t[hold_time]
-        if focus2_time == 1:
-            focus2_time = "9AM-11AM"
-        elif focus2_time == 2:
-            focus2_time = "11AM-1PM"
-        elif focus2_time == 3:
-            focus2_time = "1PM-3PM"
-        ws1.update_cell(cell, 7, str(focus1_time))
-        ws1.update_cell(cell, 8, str(focus2_time))
+        hours = []
+        hours_pre = teacher.hours_taken
+        if 1 in hours_pre:
+            hours.append("9AM-11AM")
+        if 2 in hours_pre:
+            hours.append("11AM-1PM")
+        if 3 in hours_pre:
+            hours.append("1PM-3PM")
+        ws2.update_cell(cell, 2, str(hours)[1:-1])
+        # focus
+        ws2.update_cell(cell, 5, teacher.focus)
 
 print("Welcome to teacher/student sorter!\nIf lost, enter \"help\", otherwise, enter \"import data\" to start")
 while True:

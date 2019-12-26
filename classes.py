@@ -19,6 +19,7 @@ class Teacher:
         self.focus = focus
         self.students = {}
         self.hours = hours
+        self.hours_taken = []
         self.first_pass = False
         # add focus2 feature later
         # self.focus2 = ""
