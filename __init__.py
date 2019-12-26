@@ -33,280 +33,115 @@ teachers_list = [
     classes.Teacher("Panda Amanda", "IR", [1, 3]),
     classes.Teacher("First3 Last3", "AP", [1, 2])
 ]
+def match_first(focus, teacher, student):
+    # t_time = random.choice(teacher.hours)
+    t_time = teacher.hours[0]
+    teacher.first_pass = True
+    # if t_time_orig == 1:
+    #     t_time = "9AM-11AM"
+    # elif t_time_orig == 2:
+    #     t_time = "11AM-1PM"
+    # elif t_time_orig == 3:
+    #     t_time = "1PM-3PM"
+    print("time: " + str(t_time))
+    print("Student name: " + student.name)
+    print("teacher name: " + teacher.name)
+    if focus == 1:
+        # add teacher to student's focus1 teachers list, time is key, teacher obj is value
+        student.focus1_t[str(teacher.name)] = t_time
+        student.focus1_obj.append(teacher)
+        # add student to teacher's student list, time is key, student obj is value
+        teacher.students[str(student.name)] = t_time
+    if focus == 2:
+        student.focus2_t[str(teacher.name)] = t_time
+        student.focus2_obj.append(teacher)
+        teacher.students[str(student.name)] = t_time
 
+def match_continue(focus, teacher, student):
+    if focus == 1:
+        s_teacher_list = list(student.focus1_t)
+        teacher1 = student.focus1_t[s_teacher_list[0]]
+        time = s_teacher_list[0]
+        s_teacher_list = list(student.focus2_t)
+        name_teacher = s_teacher_list[0]
+        # student
+        student.focus1_obj.append(teacher)
+        student.focus1_t[teacher.name] = student.focus2_t[name_teacher]
+        print("teacher name: " + teacher.name)
+        print("First teacher: " + name_teacher)
+        print("student name: " + student.name)
+        # teacher
+        teacher.students[str(student.name)] = time
+    if focus == 2:
+        s_teacher_list = list(student.focus2_t)
+        teacher1 = student.focus2_t[s_teacher_list[0]]
+        time = s_teacher_list[0]
+        s_teacher_list = list(student.focus2_t)
+        name_teacher = s_teacher_list[0]
+        # student
+        student.focus2_obj.append(teacher)
+        student.focus2_t[teacher.name] = student.focus2_t[name_teacher]
+        # teacher
+        teacher.students[student.name] = time
+        print("teacher name: " + teacher.name)
+        print("First teacher: " + name_teacher)
+        print("student name: " + student.name)
 
 def sort():
-    # inefficient, scans through students and compares them all to every teacher, even if they can't match, optimize later
-    # for loop goes through students and then teachers
-    for t_index, teacher in enumerate(teachers_list):
-        for s_index, student in enumerate(students_list):
-            # teacher checks
-            if teacher.student1 == "":
-                # checks if focus matches for either group
-                if teacher.focus == student.focus1 or teacher.focus == student.focus2:
-                    # checks if teacher focus will go in focus 1, 2, or None
-                    if teacher.focus == student.focus1:
-                        # focus 1, if nothing in teacher list for students
-                        if len(student.focus1_teachers) <= 0:
-                            # teacher changes
-                            # add student obj reference to teacher
-                            teacher.student1_obj = student
-                            # add student hours to teacher
-                            s_name = student.name
-                            # first available teacher hour, teacher is master
-                            t_hours = teacher.hours[0]
-                            if t_hours == 1:
-                                t_hours = "9AM-11AM"
-                            elif t_hours == 2:
-                                t_hours = "11AM-1PM"
-                            elif t_hours == 3:
-                                t_hours = "1PM-3PM"
-                            teacher.student1 = s_name + str(t_hours)
-                            # student changes
-                            # add teacher obj reference to student focus1 teachers list
-                            student.focus1_teachers.append(teacher)
-                            # add hours to student
-                            student.focus1_hour = teacher.hours[0]
-                            print("New teacher added")
-                            print("Student name: " + student.name)
-                            print("Teacher name: " + teacher.name)
-                        else:
-                            # otherwise, if first teacher in students list = teachers focus 1 and less than 2 items in list
-                            if student.focus1_teachers[0].focus == teacher.focus and len(student.focus1_teachers) <= 1:
-                                # if any of the hours for new teacher in first teacher
-                                if any(teacher.hours) == student.focus1_teachers[0].hours[0]:
-                                    # teacher changes
-                                    # add student obj reference
-                                    teacher.student1_obj = student
-                                    # add student hours to teacher
-                                    s_name = student.name
-                                    t_hours = student.focus1_teachers[0]
-                                    if t_hours == 1:
-                                        t_hours = "9AM-11AM"
-                                    elif t_hours == 2:
-                                        t_hours = "11AM-1PM"
-                                    elif t_hours == 3:
-                                        t_hours = "1PM-3PM"
-                                    teacher.student1 = s_name + str(t_hours)
-                                    # student changes
-                                    # add teacher obj reference to student
-                                    student.focus1_teachers.append(teacher)
-                                    # add hours to student
-                                    if student.focus1_hour == teacher.hours[0]:
-                                        print("Works adding teacher to master")
-                                    else:
-                                        print("Error adding teacher to focus 1")
-                                    time_slot = student.focus1_teachers[0].hours[0]
-                                    print("Teacher: " + teacher.name)
-                                    print("Student: " + student.name)
-                                    print("Time slot: " + str(time_slot))
-                                    print(student.focus1_hour)
-                                    print("teacher hours: " + str(teacher.hours[0]))
-                                    print("master teacher hours" + str(student.focus1_teachers[0].hours[0]))
-
-#  test to see if first creation block works, then finish the second one, make sure master teacher is the one dictating the hours
-
-# def sort():
-#     num_list = [1, 2, 3]
-#     random.shuffle(num_list)
-#     # does not work because teachers are being rewritten, remove teachers once used from pool
-#     for loop in num_list:
-#         # block 1
-#         if loop == 1:
-#             print("works")
-#             # check if teachers have student and if not, add to pool
-#             teacher_pool = []
-#             for teacher in range(len(teachers_list)):
-#                 if teachers_list[teacher].student1 == "" and 1 in teachers_list[teacher].hours:
-#                     teacher_pool.append(teachers_list[teacher])
-#             for teacher in teacher_pool:
-#                 print("Teacher pool: " + teacher.name)
-#             # check if students have teacher, if not, add to pool
-#             student_pool = []
-#             for student in range(len(students_list)):
-#                 if len(students_list[student].focus1_teachers) < 2 or len(students_list[student].focus2_teachers) < 2:
-#                     student_pool.append(students_list[student])
-#                 # elif len(students_list[student].focus2_teachers) < 2:
-#                 #     student_pool.append(students_list[student])
-#             for student in student_pool:
-#                 print("Student pool: " + student.name)
-#             # loops through student pool
-#             if len(student_pool) > 0 and len(teacher_pool) > 0:
-#                 # runs twice because it needs to do both focus'
-#                 # for student in student_pool:
-#                 #     for teacher in teacher_pool:
-#                 for teacher in teacher_pool:
-#                     for student in student_pool:
-#                         if student.focus1 == teacher.focus and teacher.student1 == "" and student.hours_cant.count(1) < 2:
-#                             # for index in range(len(student.focus2_objects)):
-#                             if 1 in student.focus1_objects and 2 not in student.focus1_objects and 3 not in student.focus1_objects or len(student.focus1_objects) == 0:
-#                                 if len(student.focus1_teachers) < 2:
-#                                     if student.hours_cant.count(1) < 2:
-#                                         student.hours_cant.append(1)
-#                                         student.focus1_teachers.append(teacher.name)
-#                                         teacher.student1 = student.name
-#                                         # teacher_pool.remove(teacher)
-#                                         student.focus1_objects.append(1)
-#                                         if str(student.hours.get(1)) == "None":
-#                                             student.hours[1] = str(teacher.name + " 9AM-11AM, ")
-#                                         else:
-#                                             student.hours[1] = str(student.hours.get(1)) + str(teacher.name + " 9AM-11AM, ")
-#                                         print(student.name)
-#                                         print(teacher.name)
-#                                         print("-Works-")
-#                         if student.focus2 == teacher.focus and teacher.student1 == "" and student.hours_cant.count(1) < 2:
-#                             # for index in range(len(student.focus2_objects)):
-#                             if 1 in student.focus2_objects and not 2 in student.focus2_objects and not 3 in student.focus2_objects or len(student.focus1_objects) == 0:
-#                                 if len(student.focus2_teachers) < 2:
-#                                     if student.hours_cant.count(1) < 2:
-#                                         student.hours_cant.append(1)
-#                                         student.focus2_teachers.append(teacher.name)
-#                                         teacher.student1 = student.name
-#                                         # remove from teacher pool
-#                                         # teacher_pool.remove(teacher)
-#                                         student.focus2_objects.append(1)
-#                                         if str(student.hours.get(1)) == "None":
-#                                             student.hours[1] = str(teacher.name + " 9AM-11AM, ")
-#                                         else:
-#                                             student.hours[1] = str(student.hours.get(1)) + str(teacher.name + " 9AM-11AM, ")
-#                                         print(student.name)
-#                                         print(teacher.name)
-#                                         print("-works-")
-#                     if len(student.focus1_teachers) >= 2 and len(student.focus2_teachers) >= 2:
-#                         student_pool.remove(student)
-#                     teacher_pool.remove(teacher)
-#             else:
-#                 print("Error: not enough students/teachers in pool")
-#         # block 2
-#         elif loop == 2:
-#             # check if teachers have student and if not, add to pool
-#             teacher_pool = []
-#             for teacher in range(len(teachers_list)):
-#                 if teachers_list[teacher].student2 == "" and 2 in teachers_list[teacher].hours:
-#                     teacher_pool.append(teachers_list[teacher])
-#             for teacher in teacher_pool:
-#                 print("Teacher pool: " + teacher.name)
-#             # check if students have teacher, if not, add to pool
-#             student_pool = []
-#             for student in range(len(students_list)):
-#                 if len(students_list[student].focus1_teachers) < 2 or len(students_list[student].focus2_teachers) < 2:
-#                     student_pool.append(students_list[student])
-#                 # elif len(students_list[student].focus2_teachers) < 2:
-#                 #     student_pool.append(students_list[student])
-#             for student in student_pool:
-#                 print("Student pool: " + student.name)
-#             # loops through student pool
-#             if len(student_pool) > 0 and len(teacher_pool) > 0:
-#                 for student in student_pool:
-#                     for teacher in teacher_pool:
-#                 # for teacher in teacher_pool:
-#                 #     for student in student_pool:
-#                         if student.focus1 == teacher.focus and teacher.student2 == "" and student.hours_cant.count(2) < 2:
-#                             # for index in range(len(student.focus1_objects)):
-#                                 # checks if there is teachers with the same hours in focus1, if so, add more
-#                             if 2 in student.focus1_objects and not 1 in student.focus1_objects and not 3 in student.focus1_objects or len(student.focus1_objects) == 0:
-#                                 if len(student.focus1_teachers) < 2:
-#                                     if student.hours_cant.count(2) < 2:
-#                                         student.hours_cant.append(2)
-#                                         student.focus1_teachers.append(teacher.name)
-#                                         teacher.student2 = student.name
-#                                         teacher_pool.remove(teacher)
-#                                         student.focus1_objects.append(2)
-#                                         print("teacher name: " + teacher.name)
-#                                         print(teacher_pool)
-#                                         if str(student.hours.get(2)) == "None":
-#                                             student.hours[2] = str(teacher.name + " 11AM-1PM, ")
-#                                         else:
-#                                             student.hours[2] = str(student.hours.get(2)) + str(teacher.name + " 11AM-1PM, ")
-#                                         print(student.name)
-#                                         print(teacher.name)
-#                                         print("-Works- Block 2")
-#                         if student.focus2 == teacher.focus and teacher.student2 == "" and student.hours_cant.count(2) < 2:
-#                             # for index in range(len(student.focus2_objects)):
-#                             if 2 in student.focus2_objects and not 1 in student.focus2_objects and not 3 in student.focus2_objects or len(student.focus1_objects) == 0:
-#                                 if len(student.focus2_teachers) < 2:
-#                                     if student.hours_cant.count(2) < 2:
-#                                         student.hours_cant.append(2)
-#                                         student.focus2_teachers.append(teacher.name)
-#                                         teacher.student2 = student.name
-#                                         teacher_pool.remove(teacher)
-#                                         student.focus2_objects.append(2)
-#                                         if str(student.hours.get(2)) == "None":
-#                                             student.hours[2] = str(teacher.name + " 11AM-1PM, ")
-#                                         else:
-#                                             student.hours[2] = str(student.hours.get(2)) + str(teacher.name + " 11AM-1PM, ")
-#
-#                                         print(student.name)
-#                                         print(teacher.name)
-#                                         print("-works- Block 2")
-#                     if len(student.focus1_teachers) >= 2 and len(student.focus2_teachers) >= 2:
-#                         student_pool.remove(student)
-#             else:
-#                 print("Error: not enough students/teachers in pool")
-#         elif loop == 3:
-#             print("works")
-#             # check if teachers have student and if not, add to pool
-#             teacher_pool = []
-#             for teacher in range(len(teachers_list)):
-#                 if teachers_list[teacher].student3 == "" and 3 in teachers_list[teacher].hours:
-#                     teacher_pool.append(teachers_list[teacher])
-#             for teacher in teacher_pool:
-#                 print("Teacher pool: " + teacher.name)
-#             # check if students have teacher, if not, add to pool
-#             student_pool = []
-#             for student in range(len(students_list)):
-#                 if len(students_list[student].focus1_teachers) < 2 or len(students_list[student].focus2_teachers) < 2:
-#                     student_pool.append(students_list[student])
-#                 # elif len(students_list[student].focus2_teachers) < 2:
-#                 #     student_pool.append(students_list[student])
-#             for student in student_pool:
-#                 print("Student pool: " + student.name)
-#             # loops through student pool
-#             if len(student_pool) > 0 and len(teacher_pool) > 0:
-#                 # runs twice because it needs to do both focus'
-#                 # for i in range(2):
-#                 for student in student_pool:
-#                     for teacher in teacher_pool:
-#                 # for teacher in teacher_pool:
-#                 #     for student in student_pool:
-#                         if student.focus1 == teacher.focus and teacher.student3 == "" and student.hours_cant.count(3) < 2:
-#                             # for index in range(len(student.focus1_objects)):
-#                             if 3 in student.focus1_objects and not 1 in student.focus1_objects and not 2 in student.focus1_objects or len(student.focus1_objects) == 0:
-#                                 if len(student.focus1_teachers) < 2:
-#                                     if student.hours_cant.count(3) < 2:
-#                                         student.hours_cant.append(3)
-#                                         student.focus1_teachers.append(teacher.name)
-#                                         teacher.student3 = student.name
-#                                         teacher_pool.remove(teacher)
-#                                         student.focus1_objects.append(3)
-#                                         if str(student.hours.get(3)) == "None":
-#                                             student.hours[3] = str(teacher.name + " 1PM-3PM, ")
-#                                         else:
-#                                             student.hours[3] = str(student.hours.get(3)) + str(teacher.name + " 1PM-3PM, ")
-#                                         print(student.name)
-#                                         print(teacher.name)
-#                                         print("-Works-")
-#                         elif student.focus2 == teacher.focus and teacher.student3 == "" and student.hours_cant.count(3) < 2:
-#                             # for index in range(len(student.focus2_objects)):
-#                             if 3 in student.focus2_objects and not 1 in student.focus2_objects and not 2 in student.focus2_objects or len(student.focus1_objects) == 0:
-#                                 if len(student.focus2_teachers) < 2:
-#                                     if student.hours_cant.count(3) < 2:
-#                                         student.hours_cant.append(3)
-#                                         student.focus2_teachers.append(teacher.name)
-#                                         teacher.student3 = student.name
-#                                         teacher_pool.remove(teacher)
-#                                         student.focus2_objects.append(3)
-#                                         if str(student.hours.get(3)) == "None":
-#                                             student.hours[3] = str(teacher.name + " 1PM-3PM, ")
-#                                         else:
-#                                             student.hours[3] = str(student.hours.get(3)) + str(teacher.name + " 1PM-3PM, ")
-#                                         print(student.name)
-#                                         print(teacher.name)
-#                                         print("-works-")
-#                     if len(student.focus1_teachers) >= 2 and len(student.focus2_teachers) >= 2:
-#                         student_pool.remove(student)
-#             else:
-#                 print("Error: not enough students/teachers in pool")
+    # run first block, then second
+    for loop in range(2):
+        for student in students_list:
+            for teacher in teachers_list:
+                if loop == 0:
+                    if teacher.first_pass is not True:
+                        if len(student.focus1_obj) <= 0 or len(student.focus2_obj) <= 0:
+                            if not teacher.students:
+                                if teacher.focus == student.focus1:
+                                    print("test")
+                                    if len(student.focus1_t) <= 0:
+                                        match_first(1, teacher, student)
+                                        print("Focus 1")
+                                elif teacher.focus == student.focus2:
+                                    print("test2")
+                                    if len(student.focus2_t) <= 0:
+                                        match_first(2, teacher, student)
+                                        print("Focus 2")
+                elif loop == 1:
+                    print("loop2")
+                    print(student.name)
+                    print(teacher.focus)
+                    print(student.focus1)
+                    print(student.focus2)
+                    print(len(student.focus1_t))
+                    print(student.focus1_t)
+                    print(len(student.focus2_t))
+                    print(student.focus2_t)
+                    if teacher.focus == student.focus1 and len(student.focus1_t) <= 1:
+                        if teacher.name != student.focus1_obj[0].name:
+                            print("loop2")
+                            print(loop)
+                            # # turns student's focus1 t dictionary in a list, index = lists first obj
+                            # s_teacher_list = list(student.focus1_t)
+                            # index = s_teacher_list[0]
+                            # print(index)
+                            if student.focus1_obj[0].focus == teacher.focus:
+                                s_teacher_list = list(student.focus1_t)
+                                name_teacher = s_teacher_list[0]
+                                if any(teacher.hours) == student.focus1_t[name_teacher]:
+                                    match_continue(1, teacher, student)
+                    elif teacher.focus == student.focus2 and len(student.focus2_t) <= 1:
+                        if teacher.name != student.focus2_obj[0].name:
+                            # # turns student's focus1 t dictionary in a list, index = lists first obj
+                            # s_teacher_list = list(student.focus1_t)
+                            # index = s_teacher_list[0]
+                            # print(index)
+                            if student.focus2_obj[0].focus == teacher.focus:
+                                s_teacher_list = list(student.focus2_t)
+                                name_teacher = s_teacher_list[0]
+                                if any(teacher.hours) == student.focus2_t[name_teacher]:
+                                    match_continue(2, teacher, student)
+                    else:
+                        print("Error: student has more or less than 1 teacher")
 
 def create_students():
     print("Creating students...")
@@ -370,41 +205,67 @@ def export_to_sheets():
     ws1.update_cell(1, 2, "Adviser")
     ws1.update_cell(1, 3, "Focus 1 Teachers")
     ws1.update_cell(1, 5, "Focus 2 Teachers")
-    ws1.update_cell(1, 7, "Testing Hours")
+    ws1.update_cell(1, 7, "Focus 1 Hour")
+    ws1.update_cell(1, 8, "Focus 2 Hour")
     sh1.share("studentassigner@gmail.com", perm_type="user", role="writer")
     # teacher sheet
-    sh2 = gc.create("Teachers Sorted")
-    ws2 = sh2.get_worksheet(0)
-    ws2.update_cell(1, 1, "Name")
-    ws2.update_cell(1, 2, "Hours")
-    ws2.update_cell(1, 3, "Focus")
-    ws2.update_cell(1, 4, "Students and Time")
-    sh2.share("studentassigner@gmail.com", perm_type="user", role="writer")
+    # sh2 = gc.create("Teachers Sorted")
+    # ws2 = sh2.get_worksheet(0)
+    # ws2.update_cell(1, 1, "Name")
+    # ws2.update_cell(1, 2, "Hours")
+    # ws2.update_cell(1, 3, "Focus")
+    # ws2.update_cell(1, 4, "Students and Time")
+    # sh2.share("studentassigner@gmail.com", perm_type="user", role="writer")
     # write to sheets
     # student
     for index in range(len(students_list)):
         cell = index + 2
+        student = students_list[index]
         # name
-        ws1.update_cell(cell, 1, str(students_list[index].name))
+        ws1.update_cell(cell, 1, str(student.name))
         # adviser
-        ws1.update_cell(cell, 2, str(students_list[index].adviser))
-        # prints teachers out, needed for loop so it dosent give an index error
-        for loop in range(len(students_list[index].focus1_teachers)):
-            if loop == 1:
+        ws1.update_cell(cell, 2, str(student.adviser))
+        # prints teachers out, needed for loop so it doesnt give an index error
+        for loop in range(2):
+            print(loop)
+            if loop == 0:
                 # focus 1 teacher 1
-                ws1.update_cell(cell, 3, str(students_list[index].focus1_teachers[0]))
-            if loop == 2:
+                ws1.update_cell(cell, 3, str(student.focus1_obj[0].name))
+                print("works1")
+            if loop == 1:
                 # focus 1 teacher 2
-                ws1.update_cell(cell, 4, str(students_list[index].focus1_teachers[1]))
-        for loop2 in range(len(students_list[index].focus2_teachers)):
-            if loop2 == 1:
+                ws1.update_cell(cell, 4, str(student.focus1_obj[1].name))
+                print("works2")
+        for loop2 in range(2):
+            if loop2 == 0:
                 # focus 2 teacher 1
-                ws1.update_cell(cell, 5, str(students_list[index].focus2_teachers[0]))
-            if loop2 == 2:
+                ws1.update_cell(cell, 5, str(student.focus2_obj[0].name))
+                print("works3")
+            if loop2 == 1:
                 # focus 2 teacher 2
-                ws1.update_cell(cell, 6, str(students_list[index].focus2_teachers[1]))
+                ws1.update_cell(cell, 6, str(student.focus2_obj[1].name))
+                print("works4")
         # hours
-        ws1.update_cell(cell, 7, str(students_list[index].hours)[1: -1])
+        s_teacher_list = list(student.focus1_t)
+        hold_time = s_teacher_list[0]
+        focus1_time = student.focus1_t[hold_time]
+        if focus1_time == 1:
+            focus1_time = "9AM-11AM"
+        elif focus1_time == 2:
+            focus1_time = "11AM-1PM"
+        elif focus1_time == 3:
+            focus1_time = "1PM-3PM"
+        s_teacher_list = list(student.focus2_t)
+        hold_time = s_teacher_list[0]
+        focus2_time = student.focus2_t[hold_time]
+        if focus2_time == 1:
+            focus2_time = "9AM-11AM"
+        elif focus2_time == 2:
+            focus2_time = "11AM-1PM"
+        elif focus2_time == 3:
+            focus2_time = "1PM-3PM"
+        ws1.update_cell(cell, 7, str(focus1_time))
+        ws1.update_cell(cell, 8, str(focus2_time))
         # ws1.update_cell(cell, 4, str(students_list[index].focus2_teachers)[1:-1])
 # def write_to_sheets():
 #     global ws1
@@ -433,6 +294,6 @@ while True:
             # sort
             sort()
             # excel sheet
-            # export_to_sheets()
+            export_to_sheets()
         else:
             sys.exit()
