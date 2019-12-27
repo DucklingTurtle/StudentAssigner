@@ -70,7 +70,7 @@ def verify():
                 else:
                     print("Error: Focus 1 teachers not equal")
             except:
-                print(student.name + " missing focus 1 second teacher")
+                print(student.name + " Missing Focus 1 Second Teacher")
                 sort_again = True
             # check if all focus 2 teachers have the same time
     try:
