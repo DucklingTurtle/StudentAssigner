@@ -3,6 +3,8 @@ import classes, teachers_sheet, students_sheet, sys, gspread, random, time
 from tkinter import *
 from oauth2client.service_account import ServiceAccountCredentials
 
+# look at itertools for algorithm optimization
+
 # teachers sheet and student sheet
 t_sheet = teachers_sheet.sheet
 s_sheet = students_sheet.sheet
