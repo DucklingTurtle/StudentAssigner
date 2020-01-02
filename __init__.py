@@ -36,6 +36,8 @@ teachers_list = [
     classes.Teacher("Panda Amanda", "IR", [1, 3]),
     classes.Teacher("First3 Last3", "AP", [1, 2])
 ]
+days_list = {
+}
 
 def verify():
     for student in students_list:
@@ -242,6 +244,21 @@ def sort():
                                     # print("In any function, Focus 1 Loop 2")
                                     match_continue(2, teacher, student)
 
+
+def match():
+    # number of students per day
+    stu_per_day = len(students_list) / 10
+    daily_students = round(stu_per_day, 0)
+    # students per loop
+    loop_student = 0
+    # 10 days loop
+    for loop in range(11):
+        while loop_student < 3:
+        for student in students_list:
+            # teacher loop
+            for teacher in teachers_list:
+
+
 def create_students():
     print("Creating students...")
     # get data for students
@@ -405,9 +422,7 @@ while True:
     print("Command: ")
     user_input = input("").strip().lower()
     if user_input == "import data":
-        # create students
         create_students()
-        # create teachers
         create_teachers()
         # user input
         print("\nSort and print to excel sheet?\nY/N")
