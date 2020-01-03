@@ -19,7 +19,7 @@ for x in range(50):
     x += 2
     # create random values
     name_num += 1
-    name = "First" + str(name_num) + " " + "Last" + str(name_num)
+    name = "First" + str(name_num) + " Last" + str(name_num)
     focus1 = random.choice(focus_list)
     focus2 = random.choice(focus_list)
     while True:

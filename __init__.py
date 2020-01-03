@@ -283,7 +283,8 @@ def create_teachers():
     print("Creating teachers...")
     # get data for teachers
     t_name_col = t_sheet.col_values(2)
-    t_focus_col = t_sheet.col_values(3)
+    t_focus1_col = t_sheet.col_values(3)
+    t_focus2_col = t_sheet.col_values(4)
     t_hours_col = t_sheet.col_values(4)
     # starts at index 2 to prevent errors from 0 and to not get the header, gets range of teachers
     for index in range(2, (len(t_sheet.col_values(2))) + 1):
