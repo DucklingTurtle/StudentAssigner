@@ -32,9 +32,9 @@ students_list = [
     # classes.Student("Amanda Panda", "CP", "TH", "Adviser 2")
 ]
 teachers_list = [
-    classes.Teacher("Test_first1 Test_last2", "CP", [1, 2]),
-    classes.Teacher("Panda Amanda", "IR", [1, 3]),
-    classes.Teacher("First3 Last3", "AP", [1, 2])
+    # classes.Teacher("Test_first1 Test_last2", "CP", [1, 2]),
+    # classes.Teacher("Panda Amanda", "IR", [1, 3]),
+    # classes.Teacher("First3 Last3", "AP", [1, 2])
 ]
 days_list = {
 }
@@ -245,18 +245,18 @@ def sort():
                                     match_continue(2, teacher, student)
 
 
-def match():
-    # number of students per day
-    stu_per_day = len(students_list) / 10
-    daily_students = round(stu_per_day, 0)
-    # students per loop
-    loop_student = 0
-    # 10 days loop
-    for loop in range(11):
-        while loop_student < 3:
-        for student in students_list:
-            # teacher loop
-            for teacher in teachers_list:
+# def match():
+#     # number of students per day
+#     stu_per_day = len(students_list) / 10
+#     daily_students = round(stu_per_day, 0)
+#     # students per loop
+#     loop_student = 0
+#     # 10 days loop
+#     for loop in range(11):
+#         while loop_student < 3:
+#         for student in students_list:
+#             # teacher loop
+#             for teacher in teachers_list:
 
 
 def create_students():
@@ -267,7 +267,9 @@ def create_students():
     s_focus1_col = s_sheet.col_values(4)
     s_focus2_col = s_sheet.col_values(5)
     s_adviser_col = s_sheet.col_values(6)
-    # starts at index 2 to prevent errors from 0 and to not get the header, gets range of teachers
+    # starts at index 2 to prevent errors from 0 and to not get the header,
+    # does not have add at end because it needs to start at 1, and end at 9,
+    # one less than the len of the column, gets range of teachers
     for index in range(1, len(s_sheet.col_values(2))):
         s_name = s_f_name_col[index] + " " + s_l_name_col[index]
         # print("Name: " + s_name)
@@ -285,31 +287,61 @@ def create_teachers():
     t_name_col = t_sheet.col_values(2)
     t_focus1_col = t_sheet.col_values(3)
     t_focus2_col = t_sheet.col_values(4)
-    t_hours_col = t_sheet.col_values(4)
+    t_days_avai_col = t_sheet.col_values(5)
+    t_day_1_col = t_sheet.col_values(6)
+    t_day_2_col = t_sheet.col_values(7)
+    t_day_3_col = t_sheet.col_values(8)
+    t_day_4_col = t_sheet.col_values(9)
+    t_day_5_col = t_sheet.col_values(10)
+    t_day_6_col = t_sheet.col_values(11)
+    t_day_7_col = t_sheet.col_values(12)
+    t_day_8_col = t_sheet.col_values(13)
+    t_day_9_col = t_sheet.col_values(14)
+    t_day_10_col = t_sheet.col_values(15)
+    # range start 1 to avoid header
+    for index in range(1, (len(t_name_col))):
+        name = t_name_col[index]
+        focus1 = t_focus1_col[index]
+        focus2 = t_focus2_col[index]
+        days_avail_pre = t_days_avai_col[index]
+        days_avail_pre = list(days_avail_pre.split(" ,"))
+        days_avail = []
+        day_stats = {}
+        for day in days_avail_pre:
+            for index in range(1, 11):
+                if day == index:
+                    day_stats = {}
+                    hours =
+                    day_stats = {"day": day, "hours": }
+                    # might need to use .copy()
+                    days_avail.append(day_stats)
+        # days_avail = days_avail.sort()
+        # print(days_avail)
+        # print(index)
     # starts at index 2 to prevent errors from 0 and to not get the header, gets range of teachers
-    for index in range(2, (len(t_sheet.col_values(2))) + 1):
-        index2 = index - 1
-        t_name = t_name_col[index2]
-        t_focus_pre = t_focus_col[index2]
-        t_focus = ""
-        for focus in focus_list:
-            if focus in t_focus_pre:
-                t_focus = focus
-                break
-        t_hours_pre = t_hours_col[index2]
-        t_hours_pre = list(t_hours_pre.split(", "))
-        t_hours = []
-        for scan in t_hours_pre:
-            if scan == "9 AM - 11 AM":
-                t_hours.append(1)
-            if scan == "11 AM - 1 PM":
-                t_hours.append(2)
-            if scan == "1 PM - 3 PM":
-                t_hours.append(3)
-        # print(t_name)
-        # print(t_focus)
-        # print(t_hours)
-        teachers_list.append(classes.Teacher(t_name, t_focus, t_hours))
+    # for index in range(2, (len(t_sheet.col_values(2))) + 2):
+    #     index2 = index - 1
+    #     t_name = t_name_col[index2]
+    #     t_focus_pre = t_focus_col[index2]
+    #     t_focus = ""
+    #     for focus in focus_list:
+    #         if focus in t_focus_pre:
+    #             t_focus = focus
+    #             break
+    #     t_hours_pre = t_hours_col[index2]
+    #     t_hours_pre = list(t_hours_pre.split(", "))
+    #     t_hours = []
+    #     for scan in t_hours_pre:
+    #         if scan == "9 AM - 11 AM":
+    #             t_hours.append(1)
+    #         if scan == "11 AM - 1 PM":
+    #             t_hours.append(2)
+    #         if scan == "1 PM - 3 PM":
+    #             t_hours.append(3)
+    #     # print(t_name)
+    #     # print(t_focus)
+    #     # print(t_hours)
+    #     teachers_list.append(classes.Teacher(t_name, t_focus, t_hours))
 
 def export_to_sheets():
     print("Creating Sheets...")

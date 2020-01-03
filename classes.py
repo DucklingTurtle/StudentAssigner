@@ -14,12 +14,13 @@ class Student:
         # self.hours_cant = []
 
 class Teacher:
-    def __init__(self, name, focus1, focus2, hours):
+    def __init__(self, name, focus1, focus2, days, hours):
         self.name = name
         self.focus = focus1
         self.focus2 = focus2
         self.students = {}
-        self.hours = hours
+        self.days = days
+        self.av_hours_dict = hours
         self.hours_taken = []
         self.first_pass = False
         # add focus2 feature later
