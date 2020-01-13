@@ -57,7 +57,7 @@ def run():
                 else:
                     rand_day = random.randint(1, 10)
                     # print("rand_day: " + str(rand_day))
-        days_available_list.sort()
+        days_available_list = sorted(days_available_list)
         days_available = str(days_available_list)[1:-1]
         # days available
         print("days_available: " + days_available)
@@ -123,31 +123,85 @@ def verify():
     day_10_col = ws.col_values(15)
     test_list = {"name_col": name_col, "focus1_col": focus1_col, "focus2_col": focus2_col, "days_avail_col": days_avail_col, "day_1_col": day_1_col, "day_2_col": day_2_col, "day_3_col": day_3_col, "day_4_col": day_4_col,
                  "day_5_col": day_5_col, "day_6_col": day_6_col, "day_7_col": day_7_col, "day_8_col": day_8_col, "day_9_col": day_9_col, "day_10_col": day_10_col}
-    for index in range(len(name_col)):
+    day_col = {
+        1: day_1_col,
+        2: day_2_col,
+        3: day_3_col,
+        4: day_4_col,
+        5: day_5_col,
+        6: day_6_col,
+        7: day_7_col,
+        8: day_8_col,
+        9: day_9_col,
+        10: day_10_col,
+    }
+# remove headers from data
+    name_col.pop(0)
+    focus1_col.pop(0)
+    focus2_col.pop(0)
+    days_avail_col.pop(0)
+    number = 0
+    for x in day_col:
+        day_col[x].pop(0)
+    # for x in range(10):
+    #     number += 1
+    #     command = f"day_{number}_col.pop(0)"
+    #     exec(command)
+# loop through and verify data
+    # for loop, runs as many times as there are items in column
+    days = days_avail_col
+    for index in range(0, 50):
+        print("Index: " + str(index))
         # focus check
         if focus1_col[index] != focus2_col[index]:
             pass
         else:
             print("Error: Focus 1 and Focus 2 match! Index: " + str(index))
-        # all days have data
-        days = days_avail_col
-        # days = days.split(", ")
-        print("days: " + str(days))
-        day_counter = 0
-        for day in days:
-            print(days)
-            for i in range(1, 10):
-                # day_col = i + 5
-                global hold_var
-                # hold_var = ""
-                _locals = locals()
-                command = "global hold_var; global day_1_col; hold_var = day_" + str(i) + "_col; print(\"works\")"
-                # print(command)
-                exec(command, globals(), _locals)
-                print("hold_var: " + hold_var[0])
-                sys.exit()
-                # print(_locals)
+    # check all days have data
+        # sort and get day data
+        day = days[index]
+        day = day.split(", ")
+        day = list(map(int, day))
+        day = sorted(day)
+        # check
+        # print("day: " + str(day))
+        # print(day_col[2][49])
+        for day_num in day:
+            # print("day_num: " + str(day_num))
+            for cur_day in range(1, 11):
+                # print("cur_day: " + str(cur_day))
+                if day_num == cur_day:
+                    try:
+                        # print("in try")
+                        if day_col[cur_day][index] == "":
+                            print("Missing")
+                    except:
+                        print("Not found?")
+                        pass
+        #     for cur_day in range(1, 11):
+        #         # if hour == cur_day:
+        #     if hour == 3:
+        #         if day_col[3][index] == "":
+        #             print(f"ERROR: MISSING DAY AT DAY {hour}")
+        #
+        #     if hour != 3:
+        #         if day_3_col[index] == "":
+        #             print("works")
+        # for hour in days:
+        #     for day in days_check:
+        #         if hour
+        #
+        #     for i in range(1, 10):
+        #         # day_col = i + 5
+        #         global hold_var
+        #         # hold_var = ""
+        #         _locals = locals()
+        #         command = "global hold_var; global day_1_col; hold_var = day_" + str(i) + "_col; print(\"works\")"
+        #         # print(command)
+        #         exec(command, globals(), _locals)
+        #         print("hold_var: " + hold_var[0])
+        #         # print(_locals)
         # for day in
 
-# run()
+run()
 verify()
