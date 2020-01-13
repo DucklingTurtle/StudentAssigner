@@ -1,7 +1,8 @@
 print("Importing packages...")
-import classes, teachers_sheet, students_sheet, sys, gspread, random, time
+import classes, teachers_sheet, students_sheet, sys, gspread, random, time, math
 from tkinter import *
 from oauth2client.service_account import ServiceAccountCredentials
+from collections import Counter
 
 # look at itertools for algorithm optimization
 
@@ -24,9 +25,9 @@ commands_teacher = "Create Teachers, See Teachers, Remove Teacher"
 commands_assigner = "Sort"
 commands_assigner_sort = "Teachers"
 mode = "init"
-focus_list = [
+focus_list = (
     "AP", "CP", "IR", "MT", "TH"
-]
+)
 students_list = [
     # classes.Student("Osvaldo Last", "AP", "IR", "Adviser 1"),
     # classes.Student("Amanda Panda", "CP", "TH", "Adviser 2")
@@ -87,162 +88,224 @@ def verify():
         pass
 
 
-def match_first(focus, teacher, student):
-    # print("In match_first")
-    t_time = random.choice(teacher.hours)
-    while True:
-        if focus == 1:
-            # print("In focus 1")
-            if len(student.focus2_t) >= 1:
-                s_teacher_list = list(student.focus2_t)
-                name_teacher = s_teacher_list[0]
-                if t_time != student.focus2_t[name_teacher]:
-                    break
-                else:
-                    if len(teacher.hours) > 1:
-                        t_time = random.choice(teacher.hours)
-                    else:
-                        return
-            else:
-                break
-        elif focus == 2:
-            if len(student.focus1_t) >= 1:
-                # print("In focus 2")
-                s_teacher_list = list(student.focus1_t)
-                name_teacher = s_teacher_list[0]
-                if t_time != student.focus1_t[name_teacher]:
-                    break
-                else:
-                    if len(teacher.hours) > 1:
-                        t_time = random.choice(teacher.hours)
-                    else:
-                        return
-            else:
-                break
-        else:
-            print("Error: no focus")
-            return
-    teacher.first_pass = True
-    # print("time: " + str(t_time))
-    # print("Student name: " + student.name)
-    # print("teacher name: " + teacher.name)
-    if focus == 1 and t_time not in teacher.hours_taken:
-        # add teacher to student's focus1 teachers list, time is key, teacher obj is value
-        student.focus1_t[str(teacher.name)] = t_time
-        student.focus1_obj.append(teacher)
-        # add student to teacher's student list, time is key, student obj is value
-        teacher.students[str(student.name)] = t_time
-        teacher.hours_taken.append(t_time)
-        # print("t_time: " + str(t_time))
-    if focus == 2 and t_time not in teacher.hours_taken:
-        student.focus2_t[str(teacher.name)] = t_time
-        student.focus2_obj.append(teacher)
-        teacher.students[str(student.name)] = t_time
-        teacher.hours_taken.append(t_time)
+# def match_first(focus, teacher, student):
+#     # print("In match_first")
+#     t_time = random.choice(teacher.hours)
+#     while True:
+#         if focus == 1:
+#             # print("In focus 1")
+#             if len(student.focus2_t) >= 1:
+#                 s_teacher_list = list(student.focus2_t)
+#                 name_teacher = s_teacher_list[0]
+#                 if t_time != student.focus2_t[name_teacher]:
+#                     break
+#                 else:
+#                     if len(teacher.hours) > 1:
+#                         t_time = random.choice(teacher.hours)
+#                     else:
+#                         return
+#             else:
+#                 break
+#         elif focus == 2:
+#             if len(student.focus1_t) >= 1:
+#                 # print("In focus 2")
+#                 s_teacher_list = list(student.focus1_t)
+#                 name_teacher = s_teacher_list[0]
+#                 if t_time != student.focus1_t[name_teacher]:
+#                     break
+#                 else:
+#                     if len(teacher.hours) > 1:
+#                         t_time = random.choice(teacher.hours)
+#                     else:
+#                         return
+#             else:
+#                 break
+#         else:
+#             print("Error: no focus")
+#             return
+#     teacher.first_pass = True
+#     # print("time: " + str(t_time))
+#     # print("Student name: " + student.name)
+#     # print("teacher name: " + teacher.name)
+#     if focus == 1 and t_time not in teacher.hours_taken:
+#         # add teacher to student's focus1 teachers list, time is key, teacher obj is value
+#         student.focus1_t[str(teacher.name)] = t_time
+#         student.focus1_obj.append(teacher)
+#         # add student to teacher's student list, time is key, student obj is value
+#         teacher.students[str(student.name)] = t_time
+#         teacher.hours_taken.append(t_time)
+#         # print("t_time: " + str(t_time))
+#     if focus == 2 and t_time not in teacher.hours_taken:
+#         student.focus2_t[str(teacher.name)] = t_time
+#         student.focus2_obj.append(teacher)
+#         teacher.students[str(student.name)] = t_time
+#         teacher.hours_taken.append(t_time)
 
-def match_continue(focus, teacher, student):
-    # print("in match_continute")
-    if focus == 1:
-        s_teacher_list = list(student.focus1_t)
-        time_name = s_teacher_list[0]
-        time = student.focus1_t[time_name]
-        if time not in teacher.hours_taken:
-            s_teacher_list = list(student.focus1_t)
-            name_teacher = s_teacher_list[0]
-            # student
-            student.focus1_obj.append(teacher)
-            student.focus1_t[teacher.name] = student.focus1_t[name_teacher]
-            # print("teacher name: " + teacher.name)
-            # print("First teacher: " + name_teacher)
-            # print("student name: " + student.name)
-            # teacher
-            teacher.students[str(student.name)] = student.focus1_t[name_teacher]
-            teacher.hours_taken.append(time)
-            # print("hours to append: " + str(student.focus1_t[name_teacher]))
-            # print("hours taken: " + str(teacher.hours_taken))
-            # print(time)
-    if focus == 2:
-        s_teacher_list = list(student.focus2_t)
-        time_name = s_teacher_list[0]
-        time = student.focus2_t[time_name]
-        if time not in teacher.hours_taken:
-            name_teacher = s_teacher_list[0]
-            # student
-            student.focus2_obj.append(teacher)
-            student.focus2_t[teacher.name] = student.focus2_t[name_teacher]
-            # teacher
-            teacher.students[student.name] = student.focus2_t[name_teacher]
-            teacher.hours_taken.append(time)
-            # print("teacher name: " + teacher.name)
-            # print("First teacher: " + name_teacher)
-            # print("student name: " + student.name)
-            # print(teacher.hours_taken)
+# def match_continue(focus, teacher, student):
+#     if focus == 1:
+#         s_teacher_list = list(student.focus1_t)
+#         time_name = s_teacher_list[0]
+#         time = student.focus1_t[time_name]
+#         if time not in teacher.hours_taken:
+#             s_teacher_list = list(student.focus1_t)
+#             name_teacher = s_teacher_list[0]
+#             # student
+#             student.focus1_obj.append(teacher)
+#             student.focus1_t[teacher.name] = student.focus1_t[name_teacher]
+#             # print("teacher name: " + teacher.name)
+#             # print("First teacher: " + name_teacher)
+#             # print("student name: " + student.name)
+#             # teacher
+#             teacher.students[str(student.name)] = student.focus1_t[name_teacher]
+#             teacher.hours_taken.append(time)
+#             # print("hours to append: " + str(student.focus1_t[name_teacher]))
+#             # print("hours taken: " + str(teacher.hours_taken))
+#             # print(time)
+#     if focus == 2:
+#         s_teacher_list = list(student.focus2_t)
+#         time_name = s_teacher_list[0]
+#         time = student.focus2_t[time_name]
+#         if time not in teacher.hours_taken:
+#             name_teacher = s_teacher_list[0]
+#             # student
+#             student.focus2_obj.append(teacher)
+#             student.focus2_t[teacher.name] = student.focus2_t[name_teacher]
+#             # teacher
+#             teacher.students[student.name] = student.focus2_t[name_teacher]
+#             teacher.hours_taken.append(time)
+#             # print("teacher name: " + teacher.name)
+#             # print("First teacher: " + name_teacher)
+#             # print("student name: " + student.name)
+#             # print(teacher.hours_taken)
 
-def sort():
-    # run first block, then second
-    for loop in range(3):
-        for student in students_list:
-            for teacher in teachers_list:
-                if loop == 0:
-                    if teacher.first_pass is not True:
-                        if len(student.focus1_obj) <= 0 or len(student.focus2_obj) <= 0:
-                            if not teacher.students:
-                                if teacher.focus == student.focus1:
-                                    # print("test")
-                                    if len(student.focus1_t) <= 0:
-                                        # print(student.name)
-                                        match_first(1, teacher, student)
-                                        # print("Focus 1")
-                                elif teacher.focus == student.focus2:
-                                    # print("test2")
-                                    if len(student.focus2_t) <= 0:
-                                        # print(student.name)
-                                        match_first(2, teacher, student)
-                                        # print("Focus 2")
-                elif loop == 1 or loop == 2:
-                    # print("In Loop 2")
-                    # print(loop)
-                    # print(student.name)
-                    # print(teacher.name)
-                    # print(teacher.focus)
-                    # print(student.focus1)
-                    # print(student.focus2)
-                    # print(len(student.focus1_t))
-                    # print(student.focus1_t)
-                    # print(len(student.focus2_t))
-                    # print(student.focus2_t)
-                    # print("hours taken: " + str(teacher.hours_taken))
-                    # print(teacher.hours)
-                    if teacher.focus == student.focus1 and len(student.focus1_t) == 1:
-                        # print("In Focus 1 Loop 2")
-                        if teacher.name != student.focus1_obj[0].name:
-                            # print("In name comparison, Focus 1 Loop 2")
-                            # # turns student's focus1 t dictionary in a list, index = lists first obj
-                            # s_teacher_list = list(student.focus1_t)
-                            # index = s_teacher_list[0]
-                            # print(index)
-                            if student.focus1_obj[0].focus == teacher.focus:
-                                # print("In focus = teacher focus, Focus 1 Loop 2")
-                                s_teacher_list = list(student.focus1_t)
-                                name_teacher = s_teacher_list[0]
-                                if student.focus1_t[name_teacher] in teacher.hours:
-                                    # print("In any function, Focus 1 Loop 2")
-                                    match_continue(1, teacher, student)
-                    elif teacher.focus == student.focus2 and len(student.focus2_t) == 1:
-                        # print("In Focus 2 Loop 2")
-                        if teacher.name != student.focus2_obj[0].name:
-                            # print("In name comparison Focus 2 Loop 2")
-                            # # turns student's focus1 t dictionary in a list, index = lists first obj
-                            # s_teacher_list = list(student.focus1_t)
-                            # index = s_teacher_list[0]
-                            # print(index)
-                            if student.focus2_obj[0].focus == teacher.focus:
-                                # print("In focus = teacher focus, Focus 1 Loop 2")
-                                s_teacher_list = list(student.focus2_t)
-                                name_teacher = s_teacher_list[0]
-                                if student.focus2_t[name_teacher] in teacher.hours:
-                                    # print("In any function, Focus 1 Loop 2")
-                                    match_continue(2, teacher, student)
+# def sort():
+#     # run first block, then second
+#     for loop in range(3):
+#         for student in students_list:
+#             for teacher in teachers_list:
+#                 if loop == 0:
+#                     if teacher.first_pass is not True:
+#                         if len(student.focus1_obj) <= 0 or len(student.focus2_obj) <= 0:
+#                             if not teacher.students:
+#                                 if teacher.focus == student.focus1:
+#                                     # print("test")
+#                                     if len(student.focus1_t) <= 0:
+#                                         # print(student.name)
+#                                         match_first(1, teacher, student)
+#                                         # print("Focus 1")
+#                                 elif teacher.focus == student.focus2:
+#                                     # print("test2")
+#                                     if len(student.focus2_t) <= 0:
+#                                         # print(student.name)
+#                                         match_first(2, teacher, student)
+#                                         # print("Focus 2")
+#                 elif loop == 1 or loop == 2:
+#                     # print("In Loop 2")
+#                     # print(loop)
+#                     # print(student.name)
+#                     # print(teacher.name)
+#                     # print(teacher.focus)
+#                     # print(student.focus1)
+#                     # print(student.focus2)
+#                     # print(len(student.focus1_t))
+#                     # print(student.focus1_t)
+#                     # print(len(student.focus2_t))
+#                     # print(student.focus2_t)
+#                     # print("hours taken: " + str(teacher.hours_taken))
+#                     # print(teacher.hours)
+#                     if teacher.focus == student.focus1 and len(student.focus1_t) == 1:
+#                         # print("In Focus 1 Loop 2")
+#                         if teacher.name != student.focus1_obj[0].name:
+#                             # print("In name comparison, Focus 1 Loop 2")
+#                             # # turns student's focus1 t dictionary in a list, index = lists first obj
+#                             # s_teacher_list = list(student.focus1_t)
+#                             # index = s_teacher_list[0]
+#                             # print(index)
+#                             if student.focus1_obj[0].focus == teacher.focus:
+#                                 # print("In focus = teacher focus, Focus 1 Loop 2")
+#                                 s_teacher_list = list(student.focus1_t)
+#                                 name_teacher = s_teacher_list[0]
+#                                 if student.focus1_t[name_teacher] in teacher.hours:
+#                                     # print("In any function, Focus 1 Loop 2")
+#                                     match_continue(1, teacher, student)
+#                     elif teacher.focus == student.focus2 and len(student.focus2_t) == 1:
+#                         # print("In Focus 2 Loop 2")
+#                         if teacher.name != student.focus2_obj[0].name:
+#                             # print("In name comparison Focus 2 Loop 2")
+#                             # # turns student's focus1 t dictionary in a list, index = lists first obj
+#                             # s_teacher_list = list(student.focus1_t)
+#                             # index = s_teacher_list[0]
+#                             # print(index)
+#                             if student.focus2_obj[0].focus == teacher.focus:
+#                                 # print("In focus = teacher focus, Focus 1 Loop 2")
+#                                 s_teacher_list = list(student.focus2_t)
+#                                 name_teacher = s_teacher_list[0]
+#                                 if student.focus2_t[name_teacher] in teacher.hours:
+#                                     # print("In any function, Focus 1 Loop 2")
+#                                     match_continue(2, teacher, student)
+#
+
+def match():
+    # combine all focus' into one
+    # -----------------------------------------
+    s_focus_list = []
+    for student in students_list:
+        s_focus_list.append(student.focus1)
+        s_focus_list.append(student.focus2)
+    t_focus_list = []
+    for teacher in teachers_list:
+        t_focus_list.append(teacher.focus1)
+        t_focus_list.append(teacher.focus2)
+    # count number of instances for each focus
+    # ------------------------------------------
+    # create counter objects
+    s_counter_focus = Counter(s_focus_list)
+    t_counter_focus = Counter(t_focus_list)
+    s_focus_mean = {
+        "AP": None,
+        "CP": None,
+        "IR": None,
+        "MT": None,
+        "TH": None,
+    }
+    t_focus_mean = {
+            "AP": None,
+            "CP": None,
+            "IR": None,
+            "MT": None,
+            "TH": None,
+    }
+    # students organize
+    s_focus_mean["AP"] = s_counter_focus["AP"]
+    s_focus_mean["CP"] = s_counter_focus["CP"]
+    s_focus_mean["IR"] = s_counter_focus["IR"]
+    s_focus_mean["MT"] = s_counter_focus["MT"]
+    s_focus_mean["TH"] = s_counter_focus["TH"]
+    s_focus_org = sorted(s_focus_mean.items(), key=lambda item: item[1])
+    # teachers organize
+    t_focus_mean["AP"] = t_counter_focus["AP"]
+    t_focus_mean["CP"] = t_counter_focus["CP"]
+    t_focus_mean["IR"] = t_counter_focus["IR"]
+    t_focus_mean["MT"] = t_counter_focus["MT"]
+    t_focus_mean["TH"] = t_counter_focus["TH"]
+    t_focus_org = sorted(t_focus_mean.items(), key=lambda item: item[1])
+    # divide into days
+    # ------------------------------------------
+    # get # of students, divide by 10 days, and round up
+    students_per_day = len(students_list) / 10
+    math.ceil(students_per_day)
+    # match students with teachers
+    # --------------------------------------------
+    # make least common focus' list from teachers
+    t_common_focus = list(t_focus_org[4])
+    t_avg_focus = list(t_focus_org[3] + t_focus_org[2])
+    t_least_focus = list(t_focus_org[1] + t_focus_org[0])
+    # make least common focus' list from students
+    s_common_focus = list(s_focus_org[4])
+    s_avg_focus = list(s_focus_org[3] + s_focus_org[2])
+    s_least_focus = list(s_focus_org[1] + s_focus_org[0])
+
+
 
 
 # def match():
@@ -287,7 +350,7 @@ def create_teachers():
     t_name_col = t_sheet.col_values(2)
     t_focus1_col = t_sheet.col_values(3)
     t_focus2_col = t_sheet.col_values(4)
-    t_days_avai_col = t_sheet.col_values(5)
+    t_days_avail_col = t_sheet.col_values(5)
     t_day_1_col = t_sheet.col_values(6)
     t_day_2_col = t_sheet.col_values(7)
     t_day_3_col = t_sheet.col_values(8)
@@ -298,50 +361,49 @@ def create_teachers():
     t_day_8_col = t_sheet.col_values(13)
     t_day_9_col = t_sheet.col_values(14)
     t_day_10_col = t_sheet.col_values(15)
+    t_day_col = {
+        1: t_day_1_col,
+        2: t_day_2_col,
+        3: t_day_3_col,
+        4: t_day_4_col,
+        5: t_day_5_col,
+        6: t_day_6_col,
+        7: t_day_7_col,
+        8: t_day_8_col,
+        9: t_day_9_col,
+        10: t_day_10_col,
+    }
     # range start 1 to avoid header
-    for index in range(1, (len(t_name_col))):
+    for index in range(1, (len(t_name_col)) - 1):
         name = t_name_col[index]
         focus1 = t_focus1_col[index]
         focus2 = t_focus2_col[index]
-        days_avail_pre = t_days_avai_col[index]
-        days_avail_pre = list(days_avail_pre.split(" ,"))
-        days_avail = []
-        day_stats = {}
-        for day in days_avail_pre:
-            for index in range(1, 11):
-                if day == index:
-                    day_stats = {}
-                    hours =
-                    day_stats = {"day": day, "hours": }
-                    # might need to use .copy()
-                    days_avail.append(day_stats)
-        # days_avail = days_avail.sort()
+    # sort data for days available
+        days_avail = t_days_avail_col[index]
         # print(days_avail)
-        # print(index)
-    # starts at index 2 to prevent errors from 0 and to not get the header, gets range of teachers
-    # for index in range(2, (len(t_sheet.col_values(2))) + 2):
-    #     index2 = index - 1
-    #     t_name = t_name_col[index2]
-    #     t_focus_pre = t_focus_col[index2]
-    #     t_focus = ""
-    #     for focus in focus_list:
-    #         if focus in t_focus_pre:
-    #             t_focus = focus
-    #             break
-    #     t_hours_pre = t_hours_col[index2]
-    #     t_hours_pre = list(t_hours_pre.split(", "))
-    #     t_hours = []
-    #     for scan in t_hours_pre:
-    #         if scan == "9 AM - 11 AM":
-    #             t_hours.append(1)
-    #         if scan == "11 AM - 1 PM":
-    #             t_hours.append(2)
-    #         if scan == "1 PM - 3 PM":
-    #             t_hours.append(3)
-    #     # print(t_name)
-    #     # print(t_focus)
-    #     # print(t_hours)
-    #     teachers_list.append(classes.Teacher(t_name, t_focus, t_hours))
+        days = days_avail.split(", ")
+        days = list(map(int, days))
+    # get hours for days
+        hours_days = {
+            1: None,
+            2: None,
+            3: None,
+            4: None,
+            5: None,
+            6: None,
+            7: None,
+            8: None,
+            9: None,
+            10: None,
+        }
+        for x in range(1, 11):
+            try:
+                hours_days[x] = t_day_col[x][index]
+            except:
+                print("Error while creating hours, teachers.")
+        # print(hours_days)
+    # create teacher
+        teachers_list.append(classes.Teacher(name, focus1, focus2, days, hours_days))
 
 def export_to_sheets():
     print("Creating Sheets...")
@@ -452,19 +514,20 @@ def export_to_sheets():
 
 print("Welcome to Student Assigner!\nTo start, enter \"import data\"")
 while True:
-    print("Command: ")
+    # print("Command: ")
+    # user_input = input("").strip().lower()
+    # if user_input == "import data":
+    create_students()
+    create_teachers()
+    # user input
+    print("\nSort and print to excel sheet?\nY/N")
     user_input = input("").strip().lower()
-    if user_input == "import data":
-        create_students()
-        create_teachers()
-        # user input
-        print("\nSort and print to excel sheet?\nY/N")
-        user_input = input("").strip().lower()
-        if user_input == "y":
-            sort()
-            verify()
-            export_to_sheets()
-        else:
-            sys.exit()
+    if user_input == "y":
+        match()
+        # verify()
+        # export_to_sheets()
+        sys.exit()
     else:
-        print("Invalid Command")
+        sys.exit()
+# else:
+#     print("Invalid Command")

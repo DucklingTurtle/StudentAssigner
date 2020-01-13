@@ -176,32 +176,7 @@ def verify():
                         if day_col[cur_day][index] == "":
                             print("Missing")
                     except:
-                        print("Not found?")
+                        print("Missing")
                         pass
-        #     for cur_day in range(1, 11):
-        #         # if hour == cur_day:
-        #     if hour == 3:
-        #         if day_col[3][index] == "":
-        #             print(f"ERROR: MISSING DAY AT DAY {hour}")
-        #
-        #     if hour != 3:
-        #         if day_3_col[index] == "":
-        #             print("works")
-        # for hour in days:
-        #     for day in days_check:
-        #         if hour
-        #
-        #     for i in range(1, 10):
-        #         # day_col = i + 5
-        #         global hold_var
-        #         # hold_var = ""
-        #         _locals = locals()
-        #         command = "global hold_var; global day_1_col; hold_var = day_" + str(i) + "_col; print(\"works\")"
-        #         # print(command)
-        #         exec(command, globals(), _locals)
-        #         print("hold_var: " + hold_var[0])
-        #         # print(_locals)
-        # for day in
-
 run()
 verify()

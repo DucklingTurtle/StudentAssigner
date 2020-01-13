@@ -16,11 +16,11 @@ class Student:
 class Teacher:
     def __init__(self, name, focus1, focus2, days, hours):
         self.name = name
-        self.focus = focus1
+        self.focus1 = focus1
         self.focus2 = focus2
         self.students = {}
         self.days = days
-        self.av_hours_dict = hours
+        self.hours_days = hours
         self.hours_taken = []
         self.first_pass = False
         # add focus2 feature later
