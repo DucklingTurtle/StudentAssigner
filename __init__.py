@@ -281,6 +281,7 @@ def match():
     s_focus_mean["IR"] = s_counter_focus["IR"]
     s_focus_mean["MT"] = s_counter_focus["MT"]
     s_focus_mean["TH"] = s_counter_focus["TH"]
+    # sorted gets items then key is basically map and lambda does a command, here it grabs the second item
     s_focus_org = sorted(s_focus_mean.items(), key=lambda item: item[1])
     # teachers organize
     t_focus_mean["AP"] = t_counter_focus["AP"]
@@ -294,6 +295,7 @@ def match():
     # get # of students, divide by 10 days, and round up
     students_per_day = len(students_list) / 10
     math.ceil(students_per_day)
+    students_per_day = int(students_per_day)
     # match students with teachers
     # --------------------------------------------
     # make least common focus' list from teachers
@@ -304,6 +306,86 @@ def match():
     s_common_focus = list(s_focus_org[4])
     s_avg_focus = list(s_focus_org[3] + s_focus_org[2])
     s_least_focus = list(s_focus_org[1] + s_focus_org[0])
+    # Add to Pool with focus label
+    # ----------------------------------------------
+    s_pool = []
+    s_pool1 = []
+    s_pool2 = []
+    s_pool3 = []
+    t_pool = []
+    t_pool1 = []
+    t_pool2 = []
+    t_pool3 = []
+    # adding students and teachers to pool
+    # student
+    for student in students_list:
+        if student.focus1 or student.focus2 in s_least_focus:
+            s_pool1.append(student)
+        elif student.focus1 or student.focus2 in s_avg_focus and student.focus1 or student.focus2 != s_common_focus:
+            s_pool2.append(student)
+        else:
+            s_pool3.append(student)
+    for student in s_pool1:
+        s_pool.append(student)
+    for student in s_pool2:
+        s_pool.append(student)
+    for student in s_pool3:
+        s_pool.append(student)
+    # teacher
+    for teacher in teachers_list:
+        if teacher.focus1 or teacher.focus2 in t_least_focus:
+            t_pool1.append(teacher)
+        elif teacher.focus1 or teacher.focus2 in t_avg_focus and teacher.focus1 or teacher.focus2 != t_common_focus:
+            t_pool2.append(teacher)
+        else:
+            t_pool3.append(teacher)
+    for teacher in t_pool1:
+        t_pool.append(teacher)
+    for teacher in t_pool2:
+        t_pool.append(teacher)
+    for teacher in t_pool3:
+        t_pool.append(teacher)
+
+        s_pool_weeks = students_list
+        t_pool_weeks = teachers_list
+    # Matching
+    # -----------------------------------------------
+    # for 10 days
+    done = False
+    counter = 0
+    student_found = None
+    # 10 days repeats
+    for x in range(1, 11):
+        # keep adding if number of students per day is below set number per week
+        counter += 1
+        if counter >= students_per_day:
+            break
+        student_found = None
+        for student in s_pool:
+            # if student_found:
+            #     print("test break")
+            #     break
+                # move break to teacher for loop so it stops it once the student is all filled up
+            for teacher in t_pool:
+                # check if teacher fits conditions
+                while True:
+                    # if [x + y for student in s_pool for teacher in t_pool
+                    #     if ])
+                    if len(student.focus1_t) == 2 and len(student.focus2_t) == 2:
+                        break
+                    if (student.focus1 == teacher.focus1 or student.focus1 == teacher.focus2 or
+                        student.focus2 == teacher.focus1 or student.focus2 == teacher.focus2):
+                        if student.test_hour in teacher.days or student.test_hour is None:
+
+                        if teacher.focus1 == student.focus1:
+
+                break
+                    # if len(student.focus1_t) < 2:
+                    #     if student.focus1 == teacher.focus1 or teacher.focus2:
+                    #
+                    #     if student.focus1 or student.focus2 == teacher.focus1 or teacher.focus2
+
+
 
 
 
