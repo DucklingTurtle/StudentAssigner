@@ -4,10 +4,8 @@ class Student:
         self.adviser = adviser
         self.focus1 = focus1
         self.focus2 = focus2
-        self.focus1_t = {}
-        self.focus1_obj = []
-        self.focus2_t = {}
-        self.focus2_obj = []
+        self.focus_t = []
+        # self.focus1_obj = []
         self.test_hour = None
         # self.focus1_hour = []
         # self.focus2_hour = []

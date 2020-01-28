@@ -292,8 +292,8 @@ def match():
     t_focus_org = sorted(t_focus_mean.items(), key=lambda item: item[1])
     # divide into days
     # ------------------------------------------
-    # get # of students, divide by 10 days, and round up
-    students_per_day = len(students_list) / 10
+    # 10 days divided by number of students, and round up
+    students_per_day = 10 / len(students_list)
     math.ceil(students_per_day)
     students_per_day = int(students_per_day)
     # match students with teachers
@@ -319,9 +319,9 @@ def match():
     # adding students and teachers to pool
     # student
     for student in students_list:
-        if student.focus1 or student.focus2 in s_least_focus:
+        if student.focus1 in s_least_focus or student.focus2 in s_least_focus:
             s_pool1.append(student)
-        elif student.focus1 or student.focus2 in s_avg_focus and student.focus1 or student.focus2 != s_common_focus:
+        elif student.focus1 in s_avg_focus or student.focus2 in s_avg_focus and student.focus1 != s_common_focus or student.focus2 != s_common_focus:
             s_pool2.append(student)
         else:
             s_pool3.append(student)
@@ -333,9 +333,9 @@ def match():
         s_pool.append(student)
     # teacher
     for teacher in teachers_list:
-        if teacher.focus1 or teacher.focus2 in t_least_focus:
+        if teacher.focus1 in t_least_focus or teacher.focus2 in t_least_focus:
             t_pool1.append(teacher)
-        elif teacher.focus1 or teacher.focus2 in t_avg_focus and teacher.focus1 or teacher.focus2 != t_common_focus:
+        elif teacher.focus1 in t_avg_focus or teacher.focus2 in t_avg_focus and teacher.focus1 != t_common_focus or teacher.focus2 != t_common_focus:
             t_pool2.append(teacher)
         else:
             t_pool3.append(teacher)
@@ -348,42 +348,121 @@ def match():
 
         s_pool_weeks = students_list
         t_pool_weeks = teachers_list
-    # Matching
+    # Sort by focus and time teacher
     # -----------------------------------------------
-    # for 10 days
-    done = False
+    t_l_focus_dic = {
+        "AP": [],
+        "CP": [],
+        "IR": [],
+        "MT": [],
+        "TH": []
+    }
+    t_a_focus_dic = {
+        "AP": [],
+        "CP": [],
+        "IR": [],
+        "MT": [],
+        "TH": []
+    }
+    t_m_focus_dic = {
+        "AP": [],
+        "CP": [],
+        "IR": [],
+        "MT": [],
+        "TH": []
+    }
+    # least focus
+    for focus in focus_list:
+        for teacher in t_pool1:
+            if teacher.focus1 == focus or teacher.focus2:
+                t_l_focus_dic[focus].append(teacher)
+                # print(list(x.name for x in t_l_focus_dic[focus]))
+    # avg focus
+    for focus in focus_list:
+        for teacher in t_pool2:
+            if teacher.focus1 == focus:
+                t_a_focus_dic[focus].append(teacher)
+            if teacher.focus2 == focus:
+                t_a_focus_dic[focus].append(teacher)
+    # most focus
+    for focus in focus_list:
+        for teacher in t_pool3:
+            if teacher.focus1 == focus:
+                t_m_focus_dic[focus].append(teacher)
+            if teacher.focus2 == focus:
+                t_m_focus_dic[focus].append(teacher)
+    # # Matching
+    # # -----------------------------------------------
+    # # for 10 days
+    print("Students per day: " + str(students_per_day))
     counter = 0
-    student_found = None
-    # 10 days repeats
-    for x in range(1, 11):
-        # keep adding if number of students per day is below set number per week
-        counter += 1
-        if counter >= students_per_day:
-            break
-        student_found = None
-        for student in s_pool:
-            # if student_found:
-            #     print("test break")
-            #     break
-                # move break to teacher for loop so it stops it once the student is all filled up
-            for teacher in t_pool:
-                # check if teacher fits conditions
-                while True:
-                    # if [x + y for student in s_pool for teacher in t_pool
-                    #     if ])
-                    if len(student.focus1_t) == 2 and len(student.focus2_t) == 2:
-                        break
-                    if (student.focus1 == teacher.focus1 or student.focus1 == teacher.focus2 or
-                        student.focus2 == teacher.focus1 or student.focus2 == teacher.focus2):
-                        if student.test_hour in teacher.days or student.test_hour is None:
+    focus1_counter = 0
+    focus2_counter = 0
+    s_pools = [s_pool1, s_pool2, s_pool3]
+    day = 1
+    for pool in s_pools:
+        print("Pool: " + str(pool))
+        for student in pool:
+            print("Student: " + str(student))
+            if counter > students_per_day:
+                day += 1
+                counter = 0
+            counter += 1
+            focus_pool = []
+            focus_pool.append(student.focus1)
+            focus_pool.append(student.focus2)
+            focus1_counter = 0
+            focus2_counter = 0
+            print("counter: " + str(counter))
+            for focus in focus_pool:
+                print("Focus: " + str(focus))
+                for teacher in t_l_focus_dic[focus]:
+                    if student.focus1 == teacher.focus1 and focus1_counter < 2 and len(teacher.hours_days[day]) > 0:
+                        print(teacher.name)
+                        student.focus_t.append(teacher)
+                        time = student.test_hour
+                        if student.test_hour == None:
+                            time = random.choice(teacher.hours_days[day])
+                        student.test_hour = "Test Day: " + str(day) + "\nTest Hour: " + str(time)
+                        focus1_counter += 1
+                        print(student.test_hour)
 
-                        if teacher.focus1 == student.focus1:
 
-                break
-                    # if len(student.focus1_t) < 2:
-                    #     if student.focus1 == teacher.focus1 or teacher.focus2:
-                    #
-                    #     if student.focus1 or student.focus2 == teacher.focus1 or teacher.focus2
+
+
+    # done = False
+    # counter = 0
+    # student_found = None
+    # # 10 days repeats
+    # for x in range(1, 11):
+    #     # keep adding if number of students per day is below set number per week
+    #     counter += 1
+    #     if counter >= students_per_day:
+    #         break
+    #     student_found = None
+    #     for student in s_pool:
+    #         # if student_found:
+    #         #     print("test break")
+    #         #     break
+    #             # move break to teacher for loop so it stops it once the student is all filled up
+    #         for teacher in t_pool:
+    #             # check if teacher fits conditions
+    #             while True:
+    #                 # if [x + y for student in s_pool for teacher in t_pool
+    #                 #     if ])
+    #                 if len(student.focus1_t) == 2 and len(student.focus2_t) == 2:
+    #                     break
+    #                 if (student.focus1 == teacher.focus1 or student.focus1 == teacher.focus2 or
+    #                     student.focus2 == teacher.focus1 or student.focus2 == teacher.focus2):
+    #                     if student.test_hour in teacher.days or student.test_hour is None:
+    #
+    #                     if teacher.focus1 == student.focus1:
+    #
+    #             break
+    #                 # if len(student.focus1_t) < 2:
+    #                 #     if student.focus1 == teacher.focus1 or teacher.focus2:
+    #                 #
+    #                 #     if student.focus1 or student.focus2 == teacher.focus1 or teacher.focus2
 
 
 
@@ -480,7 +559,15 @@ def create_teachers():
         }
         for x in range(1, 11):
             try:
-                hours_days[x] = t_day_col[x][index]
+                hours_hold = t_day_col[x][index]
+                hours_parsed = []
+                if "9AM-11AM" in hours_hold:
+                    hours_parsed.append(1)
+                if "11AM-1PM" in hours_hold:
+                    hours_parsed.append(2)
+                if "1PM-3PM" in hours_hold:
+                    hours_parsed.append(3)
+                hours_days[x] = hours_parsed
             except:
                 print("Error while creating hours, teachers.")
         # print(hours_days)
