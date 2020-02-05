@@ -319,11 +319,14 @@ def match():
     # adding students and teachers to pool
     # student
     for student in students_list:
-        if student.focus1 in s_least_focus or student.focus2 in s_least_focus:
+        if student.focus1 in s_least_focus or student.focus2 in s_least_focus and student.focus1 not in s_common_focus or student.focus2 not in s_common_focus:
             s_pool1.append(student)
-        elif student.focus1 in s_avg_focus or student.focus2 in s_avg_focus and student.focus1 != s_common_focus or student.focus2 != s_common_focus:
+            print(student.name)
+        elif student.focus1 in s_avg_focus or student.focus2 in s_avg_focus and student.focus1 not in s_common_focus or student.focus2 not in s_common_focus:
             s_pool2.append(student)
-        else:
+            print(student.name)
+        elif student.focus1 in s_common_focus or student.focus2 in s_common_focus:
+            print(student.name)
             s_pool3.append(student)
     for student in s_pool1:
         s_pool.append(student)
@@ -403,8 +406,9 @@ def match():
     for pool in s_pools:
         print("Pool: " + str(pool))
         for student in pool:
-            print("Student: " + str(student))
-            if counter > students_per_day:
+            print("Student: " + str(student.name))
+            if counter == students_per_day:
+                print("in if")
                 day += 1
                 counter = 0
             counter += 1
@@ -425,6 +429,15 @@ def match():
                             time = random.choice(teacher.hours_days[day])
                         student.test_hour = "Test Day: " + str(day) + "\nTest Hour: " + str(time)
                         focus1_counter += 1
+                        print(student.test_hour)
+                    if student.focus2 == teacher.focus1 and focus2_counter < 2 and len(teacher.hours_days[day]) > 0:
+                        print(teacher.name)
+                        student.focus_t.append(teacher)
+                        time = student.test_hour
+                        if student.test_hour == None:
+                            time = random.choice(teacher.hours_days[day])
+                        student.test_hour = "Test Day: " + str(day) + "\nTest Hour: " + str(time)
+                        focus2_counter += 1
                         print(student.test_hour)
 
 
