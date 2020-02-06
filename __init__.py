@@ -377,7 +377,7 @@ def match():
     # least focus
     for focus in focus_list:
         for teacher in t_pool1:
-            if teacher.focus1 == focus or teacher.focus2:
+            if teacher.focus1 == focus or teacher.focus2 == focus:
                 t_l_focus_dic[focus].append(teacher)
                 # print(list(x.name for x in t_l_focus_dic[focus]))
     # avg focus
