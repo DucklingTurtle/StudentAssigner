@@ -5,13 +5,10 @@ class Student:
         self.focus1 = focus1
         self.focus2 = focus2
         self.focus_t = []
-        # self.focus1_obj = []
+        self.focus1_t = []
+        self.focus2_t = []
         self.test_hour = None
-        # self.focus1_hour = []
-        # self.focus2_hour = []
-        # self.hours = {}
-        # self.hours_cant = []
-
+        self.test_hour_parsed = [1,2]
 class Teacher:
     def __init__(self, name, focus1, focus2, days, hours):
         self.name = name

@@ -340,7 +340,7 @@ def match():
             t_pool1.append(teacher)
         elif teacher.focus1 in t_avg_focus or teacher.focus2 in t_avg_focus and teacher.focus1 != t_common_focus or teacher.focus2 != t_common_focus:
             t_pool2.append(teacher)
-        else:
+        elif teacher.focus1 in t_common_focus or teacher.focus2 in t_common_focus:
             t_pool3.append(teacher)
     for teacher in t_pool1:
         t_pool.append(teacher)
@@ -377,22 +377,18 @@ def match():
     # least focus
     for focus in focus_list:
         for teacher in t_pool1:
-            if teacher.focus1 == focus or teacher.focus2:
+            if teacher.focus1 == focus or teacher.focus2 == focus:
                 t_l_focus_dic[focus].append(teacher)
                 # print(list(x.name for x in t_l_focus_dic[focus]))
     # avg focus
     for focus in focus_list:
         for teacher in t_pool2:
-            if teacher.focus1 == focus:
-                t_a_focus_dic[focus].append(teacher)
-            if teacher.focus2 == focus:
+            if teacher.focus1 == focus or teacher.focus2 == focus:
                 t_a_focus_dic[focus].append(teacher)
     # most focus
     for focus in focus_list:
         for teacher in t_pool3:
-            if teacher.focus1 == focus:
-                t_m_focus_dic[focus].append(teacher)
-            if teacher.focus2 == focus:
+            if teacher.focus1 == focus or teacher.focus2 == focus:
                 t_m_focus_dic[focus].append(teacher)
     # # Matching
     # # -----------------------------------------------
@@ -408,39 +404,114 @@ def match():
         for student in pool:
             print("Student: " + str(student.name))
             if counter == students_per_day:
-                print("in if")
                 day += 1
                 counter = 0
+                print("Changing Day To: " + str(day))
             counter += 1
             focus_pool = []
             focus_pool.append(student.focus1)
             focus_pool.append(student.focus2)
             focus1_counter = 0
             focus2_counter = 0
+            teachers_used_list = []
             print("counter: " + str(counter))
             for focus in focus_pool:
                 print("Focus: " + str(focus))
                 for teacher in t_l_focus_dic[focus]:
-                    if student.focus1 == teacher.focus1 and focus1_counter < 2 and len(teacher.hours_days[day]) > 0:
-                        print(teacher.name)
-                        student.focus_t.append(teacher)
-                        time = student.test_hour
-                        if student.test_hour == None:
-                            time = random.choice(teacher.hours_days[day])
-                        student.test_hour = "Test Day: " + str(day) + "\nTest Hour: " + str(time)
-                        focus1_counter += 1
-                        print(student.test_hour)
-                    if student.focus2 == teacher.focus1 and focus2_counter < 2 and len(teacher.hours_days[day]) > 0:
-                        print(teacher.name)
-                        student.focus_t.append(teacher)
-                        time = student.test_hour
-                        if student.test_hour == None:
-                            time = random.choice(teacher.hours_days[day])
-                        student.test_hour = "Test Day: " + str(day) + "\nTest Hour: " + str(time)
-                        focus2_counter += 1
-                        print(student.test_hour)
+                    if teacher.hours_days[day]:
+                        # print("Teacher hours_days[" + str(day) + "]:" + str(teacher.hours_days[day]))
+                        if student.focus1 == teacher.focus1 and focus1_counter < 2 and teacher.hours_days[day]\
+                                and teacher.name not in teachers_used_list:
+                            if student.test_hour:
+                                if student.test_hour_parsed[1] in teacher.hours_days[day]:
+                                    pass
+                            else:
+                                pass
+                            teachers_used_list.append(teacher.name)
+                            student.focus_t.append(teacher)
+                            if student.test_hour is None:
+                                times = random.choice(teacher.hours_days[day])
+                                student.test_hour_parsed[0] = day
+                                student.test_hour_parsed[1] = times
+                            else:
+                                times = student.test_hour_parsed[1]
+                            student.focus1_t.append(teacher)
+                            student.test_hour = "Test Day: " + str(day) + "\nTest Hour: " + str(times)
+                            focus1_counter += 1
+                            # t_l_focus_dic[focus].remove(teacher)
+                            print("Focus1: " + str(focus))
+                            print("Teacher name: " + str(teacher.name))
+                            print("Student Test Hour and Day: " + str(student.test_hour))
+                        if student.focus2 == teacher.focus2 and focus2_counter < 2 and teacher.hours_days[day] \
+                                and teacher.name not in teachers_used_list:
+                            if student.test_hour:
+                                if student.test_hour_parsed[1] in teacher.hours_days[day]:
+                                    pass
+                            else:
+                                pass
+                            teachers_used_list.append(teacher.name)
+                            student.focus_t.append(teacher)
+                            if student.test_hour is None:
+                                times = random.choice(teacher.hours_days[day])
+                                student.test_hour_parsed[0] = day
+                                student.test_hour_parsed[1] = times
+                            else:
+                                times = student.test_hour_parsed[1]
+                            student.focus2_t.append(teacher)
+                            student.test_hour = "Test Day: " + str(day) + "\nTest Hour: " + str(times)
+                            focus2_counter += 1
+                            # t_l_focus_dic[focus].remove(teacher)
+                            print("Focus2: " + str(focus))
+                            print("Teacher name: " + str(teacher.name))
+                            print("Student Test Hour and Day: " + str(student.test_hour))
 
-
+                for teacher in t_a_focus_dic[focus]:
+                    if teacher.hours_days[day]:
+                        # print("Teacher hours_days[" + str(day) + "]:" + str(teacher.hours_days[day]))
+                        if student.focus1 == teacher.focus1 and focus1_counter < 2 and teacher.hours_days[day]\
+                                and teacher.name not in teachers_used_list:
+                            if student.test_hour:
+                                if student.test_hour_parsed[1] in teacher.hours_days[day]:
+                                    pass
+                            else:
+                                pass
+                            teachers_used_list.append(teacher.name)
+                            student.focus_t.append(teacher)
+                            if student.test_hour is None:
+                                times = random.choice(teacher.hours_days[day])
+                                student.test_hour_parsed[0] = day
+                                student.test_hour_parsed[1] = times
+                            else:
+                                times = student.test_hour_parsed[1]
+                            student.focus1_t.append(teacher)
+                            student.test_hour = "Test Day: " + str(day) + "\nTest Hour: " + str(times)
+                            focus1_counter += 1
+                            # t_a_focus_dic[focus].remove(teacher)
+                            print("Focus1: " + str(focus))
+                            print("Teacher name: " + str(teacher.name))
+                            print("Student Test Hour and Day: " + str(student.test_hour))
+                        if student.focus2 == teacher.focus2 and focus2_counter < 2 and teacher.hours_days[day] \
+                                and teacher.name not in teachers_used_list:
+                            if student.test_hour:
+                                if student.test_hour_parsed[1] in teacher.hours_days[day]:
+                                    pass
+                            else:
+                                pass
+                            teachers_used_list.append(teacher.name)
+                            student.focus_t.append(teacher)
+                            if student.test_hour is None:
+                                times = random.choice(teacher.hours_days[day])
+                                student.test_hour_parsed[0] = day
+                                student.test_hour_parsed[1] = times
+                            else:
+                                times = student.test_hour_parsed[1]
+                            student.focus2_t.append(teacher)
+                            student.test_hour = "Test Day: " + str(day) + "\nTest Hour: " + str(times)
+                            focus2_counter += 1
+                            # t_a_focus_dic[focus].remove(teacher)
+                            print("Focus2: " + str(focus))
+                            print("Teacher name: " + str(teacher.name))
+                            print("Student Test Hour and Day: " + str(student.test_hour))
 
 
     # done = False
@@ -625,35 +696,42 @@ def export_to_sheets():
         # adviser
         ws1.update_cell(cell, 2, str(student.adviser))
         # prints teachers out, needed for loop so it doesnt give an index error
-        for loop in range(2):
-            if loop == 0:
-                # focus 1 teacher 1
-                ws1.update_cell(cell, 3, str(student.focus1_obj[0].name))
-                # print("works1")
+        loop = 0
+        for loop2 in student.focus1_t:
+            loop += 1
             if loop == 1:
+                # focus 1 teacher 1
+                print(student.name)
+                print(student.focus1_t[0].name)
+                ws1.update_cell(cell, 3, str(student.focus1_t[0].name))
+                # print("works1")
+            if loop == 2:
                 try:
                     # focus 1 teacher 2
-                    ws1.update_cell(cell, 4, str(student.focus1_obj[1].name))
+                    ws1.update_cell(cell, 4, str(student.focus1_t[1].name))
                     # print("works2")
                 except:
                     print("Error! Student missing second focus 1 teacher. Student Name: " + student.name)
-        for loop2 in range(2):
-            if loop2 == 0:
+        loop = 0
+        for loop2 in student.focus2_t:
+            loop += 1
+            if loop == 1:
                 # focus 2 teacher 1
-                ws1.update_cell(cell, 5, str(student.focus2_obj[0].name))
+                ws1.update_cell(cell, 5, str(student.focus2_t[0].name))
                 # print("works3")
-            if loop2 == 1:
+            if loop == 2:
                 try:
                     # focus 2 teacher 2
-                    ws1.update_cell(cell, 6, str(student.focus2_obj[1].name))
+                    ws1.update_cell(cell, 6, str(student.focus2_t[1].name))
                     # print("works4")
                 except:
                     print("Error! Student missing second focus 2 teacher. Student Name: " + student.name)
         # hours
         # get first teacher's time
-        s_teacher_list = list(student.focus1_t)
-        hold_time = s_teacher_list[0]
-        focus1_time = student.focus1_t[hold_time]
+        s_teacher_list = list(student.focus_t)
+        times = student.test_hour_parsed[1]
+        day = student.test_hour_parsed[0]
+        focus1_time = times
         if focus1_time == 1:
             focus1_time = "9AM-11AM"
         elif focus1_time == 2:
@@ -661,38 +739,38 @@ def export_to_sheets():
         elif focus1_time == 3:
             focus1_time = "1PM-3PM"
         # get first teacher's time
-        s_teacher_list = list(student.focus2_t)
-        hold_time = s_teacher_list[0]
-        focus2_time = student.focus2_t[hold_time]
-        if focus2_time == 1:
-            focus2_time = "9AM-11AM"
-        elif focus2_time == 2:
-            focus2_time = "11AM-1PM"
-        elif focus2_time == 3:
-            focus2_time = "1PM-3PM"
+        # s_teacher_list = list(student.focus2_t)
+        # hold_time = s_teacher_list[0]
+        # focus2_time = student.focus2_t[hold_time]
+        # if focus2_time == 1:
+        #     focus2_time = "9AM-11AM"
+        # elif focus2_time == 2:
+        #     focus2_time = "11AM-1PM"
+        # elif focus2_time == 3:
+        #     focus2_time = "1PM-3PM"
         ws1.update_cell(cell, 7, str(focus1_time))
-        ws1.update_cell(cell, 8, str(focus2_time))
+        ws1.update_cell(cell, 8, str(focus1_time))
     print("Wait 100 seconds so GDrive does not lock out")
     time.sleep(100)
     print("Appending teacher sheet...")
     # teacher
-    for index in range(len(teachers_list)):
-        cell = index + 2
-        teacher = teachers_list[index]
-        # name
-        ws2.update_cell(cell, 1, teacher.name)
-        # hours
-        hours = []
-        hours_pre = teacher.hours_taken
-        if 1 in hours_pre:
-            hours.append("9AM-11AM")
-        if 2 in hours_pre:
-            hours.append("11AM-1PM")
-        if 3 in hours_pre:
-            hours.append("1PM-3PM")
-        ws2.update_cell(cell, 2, str(hours)[1:-1])
-        # focus
-        ws2.update_cell(cell, 5, teacher.focus)
+    # for index in range(len(teachers_list)):
+    #     cell = index + 2
+    #     teacher = teachers_list[index]
+    #     # name
+    #     ws2.update_cell(cell, 1, teacher.name)
+    #     # hours
+    #     hours = []
+    #     hours_pre = teacher.hours_days
+    #     if 1 in hours_pre:
+    #         hours.append("9AM-11AM")
+    #     if 2 in hours_pre:
+    #         hours.append("11AM-1PM")
+    #     if 3 in hours_pre:
+    #         hours.append("1PM-3PM")
+    #     ws2.update_cell(cell, 2, str(hours)[1:-1])
+    #     # focus
+    #     ws2.update_cell(cell, 5, teacher.focus1)
 
 print("Welcome to Student Assigner!\nTo start, enter \"import data\"")
 while True:
@@ -707,7 +785,7 @@ while True:
     if user_input == "y":
         match()
         # verify()
-        # export_to_sheets()
+        export_to_sheets()
         sys.exit()
     else:
         sys.exit()
