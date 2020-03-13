@@ -9,6 +9,11 @@ class Student:
         self.focus2_t = []
         self.test_hour = None
         self.test_hour_parsed = [1,2]
+
+    def __str__(self):
+        return f"Student\nName: {self.name}\nFocus 1: {self.focus1}\nFocus 2: {self.focus2}"
+
+
 class Teacher:
     def __init__(self, name, focus1, focus2, days, hours):
         self.name = name
